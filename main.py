@@ -67,6 +67,7 @@ class OperacionesBasicas(DeteccionGestos):
 
         if image is None:
             return
+
         imagen_salida = image.copy()
         etiqueta_manos = ['RIGHT', 'LEFT']
         gestos_manos = {'RIGHT': "UNKNOWN", 'LEFT': "UNKNOWN"}
@@ -74,19 +75,27 @@ class OperacionesBasicas(DeteccionGestos):
         for hand_index, etiqueta_manos in enumerate(etiqueta_manos):
             color = (0, 0, 255)
 
-            if contador[etiqueta_manos] == 2 and estados_dedos[etiqueta_manos + '_MIDDLE'] and estados_dedos[etiqueta_manos + '_INDEX']:
+            if contador[etiqueta_manos] == 2 and \
+                    estados_dedos[etiqueta_manos + '_MIDDLE'] and \
+                    estados_dedos[etiqueta_manos + '_INDEX']:
                 gestos_manos[etiqueta_manos] = "V SIGN"
                 color = (0, 255, 0)
-            elif contador[etiqueta_manos] == 3 and estados_dedos[etiqueta_manos + '_THUMB'] and estados_dedos[etiqueta_manos + '_INDEX'] and estados_dedos[etiqueta_manos + '_PINKY']:
+
+            elif contador[etiqueta_manos] == 3 and estados_dedos[etiqueta_manos + '_THUMB'] and \
+                    estados_dedos[etiqueta_manos + '_INDEX'] and estados_dedos[etiqueta_manos + '_PINKY']:
+
                 gestos_manos[etiqueta_manos] = "SPIDERMAN SIGN"
 
             if contador[etiqueta_manos] == 5:
                 gestos_manos[etiqueta_manos] = "HIGH-FIVE SIGN"
                 color = (0, 255, 0)
+
             if dibujo:
-                cv2.putText(imagen_salida, etiqueta_manos + ': ' + gestos_manos[etiqueta_manos],
-                            (10, (hand_index + 1) * 60),
-                            cv2.FONT_HERSHEY_PLAIN, 4, color, 5)
+                cv2.putText(
+                    imagen_salida, etiqueta_manos + ': ' + gestos_manos[etiqueta_manos], (10, (hand_index + 1) * 60),
+                    cv2.FONT_HERSHEY_PLAIN, 4, color, 5
+                )
+
         if display:
             plt_meth(imagen_salida)
 
@@ -94,5 +103,8 @@ class OperacionesBasicas(DeteccionGestos):
             return imagen_salida, gestos_manos
 
 
-a = OperacionesBasicas()
-a.check_multiple()
+if __name__ == '__main__':
+    a = OperacionesBasicas()
+    a.check_multiple()
+
+
