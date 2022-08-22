@@ -85,7 +85,6 @@ cmake-build-*/
 # IntelliJ
 out/
 
-
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
 crashlytics.properties
@@ -116,9 +115,7 @@ fabric.properties
 
 # Markdown Navigator plugin
 # https://plugins.jetbrains.com/plugin/7896-markdown-navigator-enhanced
-.idea/**/markdown-navigator.xml
-.idea/**/markdown-navigator-enh.xml
-.idea/**/markdown-navigator/
+.idea/**
 
 # Cache file creation bug
 # See https://youtrack.jetbrains.com/issue/JBR-2257
