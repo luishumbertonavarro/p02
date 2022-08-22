@@ -13,7 +13,6 @@ import pyvirtualcam
 from numpy.ma import count
 
 
-
 def plt_meth(imagen_salida, imagen=None):
     """
     Esta funcion bvlalbalbabla
@@ -45,25 +44,21 @@ class Abstracta(ABC):
 class DeteccionGestos(Abstracta):
     def __init__(self):
         self.mp_manos = mp.solutions.hands
-
         self.manos = self.mp_manos.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.5)
         self.manos_videos = self.mp_manos.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
-
         self.mp_dibujo = mp.solutions.drawing_utils
 
-    def metodo_uno(self):
-        pass
-
     def detectarPuntosManos(self, imagen, mano, dibujo=True, display=True):
-        def dibujar(hand_landmarks):
-            self.mp_dibujo.draw_landmarks(imagen_salida, landmark_list=hand_landmarks,
-                                          connections=self.mp_manos.HAND_CONNECTIONS,
-                                          landmark_drawing_spec=self.mp_dibujo.DrawingSpec(color=(255, 255, 255),
-                                                                                           thickness=2,
-                                                                                           circle_radius=2),
-                                          connection_drawing_spec=self.mp_dibujo.DrawingSpec(color=(0, 255, 0),
-                                                                                             thickness=2,
-                                                                                             circle_radius=2))
+        def draw(hand_landmarks):
+            if hand_landmarks is None:
+                return
+            landmark_drawing = self.mp_dibujo.DrawingSpec(color=(255, 255, 255), thickness=2, circle_radius=2)
+            connection_drawing = self.mp_dibujo.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
+            self.mp_dibujo.draw_landmarks(
+                imagen_salida, landmark_list=hand_landmarks, connections=self.mp_manos.HAND_CONNECTIONS,
+                landmark_drawing_spec=landmark_drawing,
+                connection_drawing_spec=connection_drawing
+            )
 
         if imagen is None:
             return
@@ -72,11 +67,9 @@ class DeteccionGestos(Abstracta):
         results = mano.process(imgRGB)
         if results.multi_hand_landmarks and dibujo:
             for hand_landmarks in results.multi_hand_landmarks:
-                dibujar(hand_landmarks)
+                draw(hand_landmarks)
         if display:
-
             plt_meth(imagen_salida, imagen)
-
         else:
             return imagen_salida, results
 
