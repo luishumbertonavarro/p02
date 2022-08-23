@@ -1,10 +1,9 @@
 import cv2
-
 from aux_functions import plt_meth
 from deteccion_gestos import DeteccionGestos
 
 
-class OperacionesBasicas(DeteccionGestos):
+class OperacionesBasicas:
 
     def check_cam_by_index(self, i):
         print('entro')

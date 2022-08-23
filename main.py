@@ -18,5 +18,3 @@ from operaciones_basicas import OperacionesBasicas
 if __name__ == '__main__':
     a = OperacionesBasicas()
     a.check_multiple()
-
-
