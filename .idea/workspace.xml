@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a02893f8-655e-4e0b-8af1-7ea235d554a5" name="Changes" comment="codigo" />
+    <list default="true" id="a02893f8-655e-4e0b-8af1-7ea235d554a5" name="Changes" comment="codigo">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -78,7 +80,8 @@
       <workItem from="1661129765784" duration="2535000" />
       <workItem from="1661139068262" duration="739000" />
       <workItem from="1661140283637" duration="36000" />
-      <workItem from="1661216864802" duration="996000" />
+      <workItem from="1661216864802" duration="1800000" />
+      <workItem from="1661281166387" duration="21000" />
     </task>
     <task id="LOCAL-00001" summary="ft: nuevos cambios">
       <created>1661130547237</created>
@@ -136,7 +139,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661217853160</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="codigo">
+      <created>1661217960688</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1661217960688</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -162,6 +172,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="codigo" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/p02$main.coverage" NAME="main Coverage Results" MODIFIED="1661217859036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/p02$main.coverage" NAME="main Coverage Results" MODIFIED="1661217929416" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
