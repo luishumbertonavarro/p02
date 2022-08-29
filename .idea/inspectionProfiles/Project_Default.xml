@@ -10,7 +10,7 @@
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
-          <list size="54">
+          <list size="56">
             <item index="0" class="java.lang.String" itemvalue="backports.zoneinfo" />
             <item index="1" class="java.lang.String" itemvalue="celery" />
             <item index="2" class="java.lang.String" itemvalue="anyjson" />
@@ -65,6 +65,8 @@
             <item index="51" class="java.lang.String" itemvalue="appmap" />
             <item index="52" class="java.lang.String" itemvalue="openpyxl" />
             <item index="53" class="java.lang.String" itemvalue="Pillow" />
+            <item index="54" class="java.lang.String" itemvalue="opencv-contrib-python" />
+            <item index="55" class="java.lang.String" itemvalue="scikit-learn" />
           </list>
         </value>
       </option>
@@ -75,6 +77,7 @@
           <option value="N801" />
           <option value="N803" />
           <option value="N802" />
+          <option value="N806" />
         </list>
       </option>
     </inspection_tool>
