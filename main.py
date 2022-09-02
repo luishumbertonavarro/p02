@@ -11,6 +11,8 @@ import mediapipe as mp
 import os
 # import pyvirtualcam
 # from numpy.ma import count
+import PySimpleGUI as sg
+
 
 from operaciones_basicas import OperacionesBasicas
 from deteccion_gestos import DeteccionGestos

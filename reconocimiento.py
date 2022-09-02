@@ -50,6 +50,7 @@ class Reconocimiento:
             plt.imshow(args[1][:, :, ::-1])
             plt.title(f"Imagen {args[0]}")
             plt.axis('off')
+
         [plot_image(key, value) for key, value in kwargs.items()]
 
     def contar_dedos(self, results, dibujo=True, display=True):
@@ -64,10 +65,9 @@ class Reconocimiento:
         ]
 
         estado_dedos = {
-            'PULGAR_DERECHO': False, 'INDICE_DERECHO': False, 'MEDIO_DERECHO': False, 'ANULAR_DERECHO': False,
-            'MENIQUE_DERCHO': False, 'PULGAR_IZQUIERDO': False, 'INDICE_IZQUIERDO': False,
-            'MEDIO_IZQUIERDO': False, 'ANULAR_IZQUIERDO': False, 'MENIQUE_IZQUIERDO': False
-        }
+            'RIGHT_THUMB': False, 'RIGHT_INDEX': False, 'RIGHT_MIDDLE': False, 'RIGHT_RING': False,
+            'RIGHT_PINKY': False, 'LEFT_THUMB': False, 'LEFT_INDEX': False, 'LEFT_MIDDLE': False,
+            'LEFT_RING': False, 'LEFT_PINKY': False}
 
         for index_mano, mano_info in enumerate(results.multi_handedness):
 
