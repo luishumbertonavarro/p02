@@ -13,32 +13,17 @@ import os
 # from numpy.ma import count
 import PySimpleGUI as sg
 
+from interfaz import Interfaz
 from operaciones_basicas import OperacionesBasicas
 from deteccion_gestos import DeteccionGestos
+from reconocimiento import ReconocimientoVideo
 
 if __name__ == '__main__':
-    sg.theme('DarkAmber')  # Add a touch of color
-    # All the stuff inside your window.
-    layout = [[sg.Text('Seleccione el gesto para la captura:')],
-              [sg.Combo(['HighFive', 'spiderman', 'V'], default_value='Seleccione un gesto', size=(19, 1))],
-              [sg.Text("Seleccione una carpeta para guardar: ")],[sg.In(enable_events=True, key='File_Path'),
-              sg.FolderBrowse()],
-              [sg.Button('Ok'), sg.Button('Cancel')]]
+    video = ReconocimientoVideo()
+    video.reconocer()
+    # interfaz = Interfaz()
+    # interfaz.generar_ventana()
 
-# Create the Window
-window = sg.Window('Window Title', layout, resizable=True)
-# Event Loop to process "events" and get the "values" of the inputs
-while True:
-    event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
-        break
-    elif event == 'File_Path':
-        direccion = values["File_Path"]
-        print(values['File_Path'])
-
-    print('You entered ', values[0], values["File_Path"])
-
-window.close()
 """a = DeteccionGestos()
 b = OperacionesBasicas()
 
