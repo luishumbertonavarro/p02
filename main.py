@@ -5,7 +5,7 @@ import cv2
 import datetime
 import pyautogui
 # import tkinter as tk
-# import numpy as np
+import numpy as np
 import mediapipe as mp
 # import matplotlib.pyplot as plt
 import os
@@ -18,15 +18,37 @@ from deteccion_gestos import DeteccionGestos
 
 if __name__ == '__main__':
     sg.theme('DarkAmber')  # Add a touch of color
+
+
     # All the stuff inside your window.
-    layout = [[sg.Text('Seleccione el gesto para la captura:')],
-              [sg.Combo(['HighFive', 'spiderman', 'V'], default_value='Seleccione un gesto', size=(19, 1))],
-              [sg.Text("Seleccione una carpeta para guardar: ")],[sg.In(enable_events=True, key='File_Path'),
-              sg.FolderBrowse()],
-              [sg.Button('Ok'), sg.Button('Cancel')]]
+    def segundo_frame():
+        sg.theme('DarkAmber')
+        layout_opencv = [[sg.Text('OpenCV Demo', size=(40, 1), justification='center', font='Helvetica 20')],
+                         [sg.Image(filename='', key='image')],
+                         [sg.Button('Cerrar', size=(10, 1), font='Helvetica 14'), ]]
+        layout_opencv_window = sg.Window('OpenCV con pysimplegui', layout_opencv, resizable=True)
+        cap = cv2.VideoCapture(1)
+        recording = True
+        while True:
+
+            event, values = layout_opencv_window.read()
+            if event == sg.WIN_CLOSED or event == 'Cerrar':  # if user closes window or clicks cancel
+                break
+            if recording:
+                ret, frame = cap.read()
+                imgbytes = cv2.imencode('.png', frame)[1].tobytes()  # ditto
+                layout_opencv_window['image'].update(data=imgbytes)
+        layout_opencv_window.close()
+
+layout = [[sg.Text('Seleccione el gesto para la captura:')],
+          [sg.Combo(['HighFive', 'spiderman', 'V'], default_value='Seleccione un gesto', size=(19, 1))],
+          [sg.Text("Seleccione una carpeta para guardar: ")],
+          [sg.In(enable_events=True, key='File_Path'),
+           sg.FolderBrowse()],
+          [sg.Button('Ok'), sg.Button('Cancel')]]
 
 # Create the Window
-window = sg.Window('Window Title', layout, resizable=True)
+window = sg.Window('Programita', layout, resizable=True)
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
     event, values = window.read()
@@ -35,7 +57,10 @@ while True:
     elif event == 'File_Path':
         direccion = values["File_Path"]
         print(values['File_Path'])
+    elif values['File_Path'] != "":
+        segundo_frame()
 
+    # elif event==
     print('You entered ', values[0], values["File_Path"])
 
 window.close()
