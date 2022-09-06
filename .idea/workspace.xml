@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81d6aa77-edaf-4ee1-ac22-9bec6b7d70fe" name="Changes" comment="">
+    <list default="true" id="3873fe79-f157-4be8-8f78-087b4a612277" name="Changes" comment="ft">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +79,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="81d6aa77-edaf-4ee1-ac22-9bec6b7d70fe" name="Changes" comment="" />
+      <changelist id="3873fe79-f157-4be8-8f78-087b4a612277" name="Changes" comment="ft" />
       <created>1661720344398</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -91,6 +89,7 @@
       <workItem from="1662058636633" duration="15000" />
       <workItem from="1662149135152" duration="2119000" />
       <workItem from="1662228564566" duration="3231000" />
+      <workItem from="1662421979919" duration="1674000" />
     </task>
     <servers />
   </component>
@@ -136,7 +135,8 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/proyectoPoo$main.coverage" NAME="main Coverage Results" MODIFIED="1662231812345" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/proyectoPoo$main.coverage" NAME="main Coverage Results" MODIFIED="1662423666365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/p02$reconocimiento.coverage" NAME="reconocimiento Coverage Results" MODIFIED="1662335338969" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/p02$main.coverage" NAME="main Coverage Results" MODIFIED="1661217859036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/proyectoPoo$checkcv.coverage" NAME="checkcv Coverage Results" MODIFIED="1660685838911" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop" />
   </component>
