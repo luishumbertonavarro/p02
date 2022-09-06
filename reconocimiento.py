@@ -55,7 +55,7 @@ class ReconocimientoVideo(ReconocimientoI):
         self.contador = 0
         self.direccion = 'c:/Users/' + self.usuarioWindows + '/desktop/Capturas/'
         self.num_of_frames = 5
-        self.counter = {'HIGH-FIVE SIGN': 0}
+        self.counter = {'HIGH-FIVE SIGN': 0, 'SPIDERMAN SIGN': 0}
         self.captured_image = None
         self.input_frame = None
         self.output_image = None
@@ -65,7 +65,7 @@ class ReconocimientoVideo(ReconocimientoI):
     def cambiar_ruta_guardado_captura(self, new_path):
         if not os.path.exists(new_path):
             os.makedirs(new_path)
-        self.direccion = new_path
+        self.direccion = new_path + '/'
 
     def detectar_puntos_manos(self, dibujo=True, display=True):
         if self.input_frame is None:
@@ -101,9 +101,9 @@ class ReconocimientoVideo(ReconocimientoI):
         ]
 
         estado_dedos = {
-            'PULGAR_DERECHO': False, 'INDICE_DERECHO': False, 'MEDIO_DERECHO': False, 'ANULAR_DERECHO': False,
-            'MENIQUE_DERECHO': False, 'PULGAR_IZQUIERDO': False, 'INDICE_IZQUIERDO': False, 'MEDIO_IZQUIERDO': False,
-            'ANULAR_IZQUIERDO': False, 'MENIQUE_IZQUIERDO': False
+            'RIGHT_THUMB': False, 'RIGHT_INDEX': False, 'RIGHT_MIDDLE': False, 'RIGHT_RING': False,
+            'RIGHT_PINKY': False, 'LEFT_THUMB': False, 'LEFT_INDEX': False, 'LEFT_MIDDLE': False,
+            'LEFT_RING': False, 'LEFT_PINKY': False
         }
 
         for index_mano, mano_info in enumerate(results.multi_handedness):
@@ -153,16 +153,17 @@ class ReconocimientoVideo(ReconocimientoI):
 
             if contador[etiqueta_manos] == 2 and estados_dedos[etiqueta_manos + '_MIDDLE'] and estados_dedos[
                 etiqueta_manos + '_INDEX']:
-                # Update the gesture value of the hand that we are iterating upon to V SIGN.
                 gestos_manos[etiqueta_manos] = "V SIGN"
                 color = (0, 255, 0)
-            elif contador[etiqueta_manos] == 3 and estados_dedos[etiqueta_manos + '_THUMB'] and estados_dedos[
+
+            if contador[etiqueta_manos] == 3 and estados_dedos[etiqueta_manos + '_THUMB'] and estados_dedos[
                 etiqueta_manos + '_INDEX'] and estados_dedos[etiqueta_manos + '_PINKY']:
                 gestos_manos[etiqueta_manos] = "SPIDERMAN SIGN"
 
             if contador[etiqueta_manos] == 5:
                 gestos_manos[etiqueta_manos] = "HIGH-FIVE SIGN"
                 color = (0, 255, 0)
+
             if dibujo:
                 cv2.putText(
                     self.output_image, etiqueta_manos + ': ' + gestos_manos[etiqueta_manos],
@@ -180,7 +181,7 @@ class ReconocimientoVideo(ReconocimientoI):
             self.output_image = self.input_frame.copy()
         return ok
 
-    def reconocer(self):
+    def reconocer(self, gesture="HIGH-FIVE SIGN"):
         while self.camera_video.isOpened():
             self.contador += 1
             filter_on = False
@@ -194,19 +195,22 @@ class ReconocimientoVideo(ReconocimientoI):
 
                 estado_dedos, count = self.contar_dedos(results, display=False)
                 hand_gestures = self.reconocimiento_gestos(estado_dedos, count, dibujo=False, display=False)
+                print(hand_gestures)
                 if results.multi_hand_landmarks and any(
-                        hand_gestures == "HIGH-FIVE SIGN" for hand_gestures in hand_gestures.values()
+                        hand_gestures == gesture for hand_gestures in hand_gestures.values()
                 ):
-                    self.counter['HIGH-FIVE SIGN'] += 1
-                    if self.counter['HIGH-FIVE SIGN'] == self.num_of_frames:
+                    self.counter[gesture] += 1
+                    if self.counter[gesture] == self.num_of_frames:
                         filter_on = True
-                        self.counter['HIGH-FIVE SIGN'] = 0
+                        self.counter[gesture] = 0
             cv2.imshow('ScreenShot', self.output_image)
             if filter_on:
                 e = str(datetime.datetime.now())
                 f = e.replace(":", "")
                 g = f.replace(".", "")
                 h = g.replace(" ", "")
+
+                print(self.direccion)
                 pyautogui.screenshot(self.direccion + h + '.png')
 
             k = cv2.waitKey(1) & 0xFF
