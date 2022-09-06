@@ -25,8 +25,8 @@ class Interfaz:
         # Event Loop to process "events" and get the "values" of the inputs
         while True:
             event, values = window.read()
+            video = ReconocimientoVideo()
             if event == sg.WIN_CLOSED or event == 'Cancel':
-                video = ReconocimientoVideo()
                 if values['gesto'] == 'HighFive':
                     video.reconocer('HIGH-FIVE SIGN')
                 elif values['gesto'] == 'spiderman':
