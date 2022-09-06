@@ -28,7 +28,8 @@ class ReconocimientoI(ABC):
     def reconocimiento_gestos(self, **kwargs):
         pass
 
-    def reconocer(self):
+    @abstractmethod
+    def reconocer(self, **kwargs):
         pass
 
     @staticmethod
@@ -53,7 +54,7 @@ class ReconocimientoVideo(ReconocimientoI):
         self.camera_video.set(3, 1280)
         self.camera_video.set(4, 960)
         self.contador = 0
-        self.direccion = 'c:/Users/' + self.usuarioWindows + '/desktop/Capturas/'
+        self.direccion = 'c:/Users/' + self.usuarioWindows + '/desktop/Capturas/pro3/'
         self.num_of_frames = 5
         self.counter = {'HIGH-FIVE SIGN': 0, 'SPIDERMAN SIGN': 0}
         self.captured_image = None
@@ -65,7 +66,9 @@ class ReconocimientoVideo(ReconocimientoI):
     def cambiar_ruta_guardado_captura(self, new_path):
         if not os.path.exists(new_path):
             os.makedirs(new_path)
-        self.direccion = new_path + '/'
+        self.direccion = new_path
+        if not str(new_path).endswith('/'):
+            self.direccion += '/'
 
     def detectar_puntos_manos(self, dibujo=True, display=True):
         if self.input_frame is None:
@@ -209,7 +212,6 @@ class ReconocimientoVideo(ReconocimientoI):
                 f = e.replace(":", "")
                 g = f.replace(".", "")
                 h = g.replace(" ", "")
-
                 print(self.direccion)
                 pyautogui.screenshot(self.direccion + h + '.png')
 
