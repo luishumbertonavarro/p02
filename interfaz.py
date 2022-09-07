@@ -19,13 +19,13 @@ class Interfaz:
         ]
     
     def generar_ventana(self):
-        video = ReconocimientoVideo()
         self.__cargar_layout()
         # Create the Window
         window = sg.Window('Reconocimiento de gestos', self.layout, resizable=True)
         # Event Loop to process "events" and get the "values" of the inputs
         while True:
             event, values = window.read()
+            video = ReconocimientoVideo()
             if event == sg.WIN_CLOSED or event == 'Cancel':
                 if values['gesto'] == 'HighFive':
                     video.reconocer('HIGH-FIVE SIGN')
