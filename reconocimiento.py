@@ -7,6 +7,8 @@ import mediapipe as mp
 import pyautogui
 from matplotlib import pyplot as plt
 
+from gestos_enum import GestosEnum
+
 
 class ReconocimientoI(ABC):
 
@@ -49,17 +51,34 @@ class ReconocimientoVideo(ReconocimientoI):
 
     def __init__(self):
         super().__init__()
-        self.camera_video = cv2.VideoCapture(0)
-        cv2.namedWindow('ScreenShot', cv2.WINDOW_NORMAL)
-        self.camera_video.set(3, 1280)
-        self.camera_video.set(4, 960)
+        self.filter_on = None
+        self.camera_video = None
         self.contador = 0
-        self.direccion = 'c:/Users/' + self.usuarioWindows + '/desktop/Capturas/pro3/'
+        self.direccion = 'c:/Users/' + self.usuarioWindows + '/desktop/Capturas/'
         self.num_of_frames = 5
-        self.counter = {'HIGH-FIVE SIGN': 0, 'SPIDERMAN SIGN': 0}
+        self.counter = {
+            GestosEnum.PALMA_ABIERTA.value: 0, GestosEnum.SPIDERMAN.value: 0,  GestosEnum.PAZ.value: 0
+        }
         self.captured_image = None
         self.input_frame = None
         self.output_image = None
+        self.gesto = GestosEnum.PALMA_ABIERTA.value
+        if not os.path.exists(self.direccion):
+            os.makedirs(self.direccion)
+
+    def cambiar_valor_gesto(self, nuevo_gesto: GestosEnum):
+        self.gesto = nuevo_gesto.value
+
+    def crear_carpeta_por_hora(self):
+        tiempo_actual = datetime.datetime.now()
+        ruta = f'clase {tiempo_actual.day} de {tiempo_actual.month} del {tiempo_actual.year} hora {tiempo_actual.hour}/'
+        carpetas = self.direccion.split('/')
+        if carpetas[-2].startswith('clase'):
+            self.direccion = self.direccion[:(self.direccion.rindex('/c') + 1)]
+            self.direccion += ruta
+        else:
+            self.direccion += ruta
+
         if not os.path.exists(self.direccion):
             os.makedirs(self.direccion)
 
@@ -81,7 +100,8 @@ class ReconocimientoVideo(ReconocimientoI):
                     self.output_image,
                     landmark_list=hand_landmarks,
                     connections=self.mp_manos.HAND_CONNECTIONS,
-                    landmark_drawing_spec=self.mp_dibujo.DrawingSpec(color=(255, 255, 255), thickness=2, circle_radius=2),
+                    landmark_drawing_spec=self.mp_dibujo.DrawingSpec(color=(255, 255, 255), thickness=2,
+                                                                     circle_radius=2),
                     connection_drawing_spec=self.mp_dibujo.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
                 )
         if display:
@@ -156,15 +176,15 @@ class ReconocimientoVideo(ReconocimientoI):
 
             if contador[etiqueta_manos] == 2 and estados_dedos[etiqueta_manos + '_MIDDLE'] and estados_dedos[
                 etiqueta_manos + '_INDEX']:
-                gestos_manos[etiqueta_manos] = "V SIGN"
+                gestos_manos[etiqueta_manos] = GestosEnum.PAZ.value
                 color = (0, 255, 0)
 
             if contador[etiqueta_manos] == 3 and estados_dedos[etiqueta_manos + '_THUMB'] and estados_dedos[
                 etiqueta_manos + '_INDEX'] and estados_dedos[etiqueta_manos + '_PINKY']:
-                gestos_manos[etiqueta_manos] = "SPIDERMAN SIGN"
+                gestos_manos[etiqueta_manos] = GestosEnum.SPIDERMAN.value
 
             if contador[etiqueta_manos] == 5:
-                gestos_manos[etiqueta_manos] = "HIGH-FIVE SIGN"
+                gestos_manos[etiqueta_manos] = GestosEnum.PALMA_ABIERTA.value
                 color = (0, 255, 0)
 
             if dibujo:
@@ -184,42 +204,40 @@ class ReconocimientoVideo(ReconocimientoI):
             self.output_image = self.input_frame.copy()
         return ok
 
-    def reconocer(self, gesture="HIGH-FIVE SIGN"):
-        while self.camera_video.isOpened():
-            self.contador += 1
-            filter_on = False
+    def configurar_camera_video(self):
+        self.camera_video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        self.camera_video.set(3, 1280)
+        self.camera_video.set(4, 960)
 
-            if not self.obtener_frame():
-                continue
+    def reconocer(self):
+        self.crear_carpeta_por_hora()
+        self.contador += 1
+        self.filter_on = False
 
-            results = self.detectar_puntos_manos(display=False)
+        if not self.obtener_frame():
+            return
 
-            if results.multi_hand_landmarks:
+        results = self.detectar_puntos_manos(display=False)
 
-                estado_dedos, count = self.contar_dedos(results, display=False)
-                hand_gestures = self.reconocimiento_gestos(estado_dedos, count, dibujo=False, display=False)
-                print(hand_gestures)
-                if results.multi_hand_landmarks and any(
-                        hand_gestures == gesture for hand_gestures in hand_gestures.values()
-                ):
-                    self.counter[gesture] += 1
-                    if self.counter[gesture] == self.num_of_frames:
-                        filter_on = True
-                        self.counter[gesture] = 0
-            cv2.imshow('ScreenShot', self.output_image)
-            if filter_on:
-                e = str(datetime.datetime.now())
-                f = e.replace(":", "")
-                g = f.replace(".", "")
-                h = g.replace(" ", "")
-                print(self.direccion)
-                pyautogui.screenshot(self.direccion + h + '.png')
+        if results.multi_hand_landmarks:
 
-            k = cv2.waitKey(1) & 0xFF
+            estado_dedos, count = self.contar_dedos(results, display=False)
+            hand_gestures = self.reconocimiento_gestos(estado_dedos, count, dibujo=False, display=False)
+            print(hand_gestures.values())
+            if results.multi_hand_landmarks and any(
+                    hand_gestures == self.gesto for hand_gestures in hand_gestures.values()
+            ):
+                self.counter[self.gesto] += 1
+                self.filter_on = True
 
-            if k == 27:
-                break
-        self.cerrar_ventanas()
+    def capturar_pantalla(self):
+        if self.filter_on:
+            e = str(datetime.datetime.now())
+            f = e.replace(":", "")
+            g = f.replace(".", "")
+            h = g.replace(" ", "")
+            pyautogui.screenshot(self.direccion + h + '.png')
+            self.filter_on = False
 
     def cerrar_ventanas(self):
         self.camera_video.release()
