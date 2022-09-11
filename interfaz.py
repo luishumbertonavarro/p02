@@ -1,6 +1,5 @@
 import PySimpleGUI as sg
 import cv2
-
 from gestos_enum import GestosEnum
 from reconocimiento import ReconocimientoVideo
 

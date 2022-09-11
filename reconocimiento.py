@@ -1,12 +1,10 @@
 import datetime
 import os
 from abc import ABC, abstractmethod
-
 import cv2
 import mediapipe as mp
 import pyautogui
 from matplotlib import pyplot as plt
-
 from gestos_enum import GestosEnum
 
 
