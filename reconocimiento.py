@@ -223,7 +223,6 @@ class ReconocimientoVideo(ReconocimientoI):
 
             estado_dedos, count = self.contar_dedos(results, display=False)
             hand_gestures = self.reconocimiento_gestos(estado_dedos, count, dibujo=False, display=False)
-            print(hand_gestures.values())
             if results.multi_hand_landmarks and any(
                     hand_gestures == self.gesto for hand_gestures in hand_gestures.values()
             ):
