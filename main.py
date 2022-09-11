@@ -13,31 +13,39 @@ import os
 # from numpy.ma import count
 import PySimpleGUI as sg
 
-from operaciones_basicas import OperacionesBasicas
-from deteccion_gestos import DeteccionGestos
+from reconocimiento import ReconocimientoVideo
 
 if __name__ == '__main__':
     sg.theme('DarkAmber')  # Add a touch of color
+    a = ReconocimientoVideo
 
 
-    # All the stuff inside your window.
+
     def segundo_frame():
+        window.close()
         sg.theme('DarkAmber')
-        layout_opencv = [[sg.Text('OpenCV Demo', size=(40, 1), justification='center', font='Helvetica 20')],
+        layout_opencv = [[sg.Text('', size=(40, 1), justification='center', font='Helvetica 20')],
                          [sg.Image(filename='', key='image')],
                          [sg.Button('Cerrar', size=(10, 1), font='Helvetica 14'), ]]
         layout_opencv_window = sg.Window('OpenCV con pysimplegui', layout_opencv, resizable=True)
         cap = cv2.VideoCapture(1)
-        recording = True
-        while True:
+        contador = 0
 
-            event, values = layout_opencv_window.read()
+        recording = True
+        while cap.isOpened():
+            ok, frame = cap.read()
+            filter_on = False
+            if not ok:
+                continue
+
+            event, values = layout_opencv_window.read(timeout=20)
             if event == sg.WIN_CLOSED or event == 'Cerrar':  # if user closes window or clicks cancel
                 break
             if recording:
                 ret, frame = cap.read()
-                imgbytes = cv2.imencode('.png', frame)[1].tobytes()  # ditto
+                imgbytes = cv2.imencode('.png', frame)[1].tobytes()
                 layout_opencv_window['image'].update(data=imgbytes)
+                contador = contador + 1
         layout_opencv_window.close()
 
 layout = [[sg.Text('Seleccione el gesto para la captura:')],
@@ -59,6 +67,8 @@ while True:
         print(values['File_Path'])
     elif values['File_Path'] != "":
         segundo_frame()
+
+
 
     # elif event==
     print('You entered ', values[0], values["File_Path"])
