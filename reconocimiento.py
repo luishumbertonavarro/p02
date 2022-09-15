@@ -5,7 +5,9 @@ import cv2
 import mediapipe as mp
 import pyautogui
 from matplotlib import pyplot as plt
-from gestos_enum import GestosEnum
+
+from gestos import GestoClass
+from gestos_enum import GestosEnum, DEDOSENUM
 
 
 class ReconocimientoI(ABC):
@@ -46,6 +48,7 @@ class ReconocimientoI(ABC):
 
 class ReconocimientoVideo(ReconocimientoI):
     usuarioWindows = os.getenv('username')
+    gestos_ = []
 
     def __init__(self):
         super().__init__()
@@ -54,18 +57,36 @@ class ReconocimientoVideo(ReconocimientoI):
         self.contador = 0
         self.direccion = 'c:/Users/' + self.usuarioWindows + '/desktop/Capturas/'
         self.num_of_frames = 5
-        self.counter = {
-            GestosEnum.PALMA_ABIERTA.value: 0, GestosEnum.SPIDERMAN.value: 0,  GestosEnum.PAZ.value: 0
-        }
         self.captured_image = None
         self.input_frame = None
         self.output_image = None
         self.gesto = GestosEnum.PALMA_ABIERTA.value
+        self.cargar_gestos_predeterminados()
         if not os.path.exists(self.direccion):
             os.makedirs(self.direccion)
 
-    def cambiar_valor_gesto(self, nuevo_gesto: GestosEnum):
-        self.gesto = nuevo_gesto.value
+    def crear_gesto(self, nuevo_gesto: GestoClass):
+        self.gestos_.append(nuevo_gesto)
+
+    def cambiar_valor_gesto(self, nuevo_gesto: str):
+        self.gesto = nuevo_gesto
+
+    def cargar_gestos_predeterminados(self):
+        peace_sign = GestoClass(
+            'PAZ',
+            [DEDOSENUM.INDEX.value, DEDOSENUM.MIDDLE.value]
+        )
+        spiderman_sign = GestoClass(
+            'SPIDERMAN',
+            [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value]
+        )
+        palma_abierta = GestoClass(
+            'PALMA_ABIERTA',
+            [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value, DEDOSENUM.RING.value, DEDOSENUM.MIDDLE.value]
+        )
+        self.gestos_.append(spiderman_sign)
+        self.gestos_.append(peace_sign)
+        self.gestos_.append(palma_abierta)
 
     def crear_carpeta_por_hora(self):
         tiempo_actual = datetime.datetime.now()
@@ -166,30 +187,12 @@ class ReconocimientoVideo(ReconocimientoI):
         if self.output_image is None:
             return
 
-        etiqueta_manos = ['RIGHT', 'LEFT']
         gestos_manos = {'RIGHT': "UNKNOWN", 'LEFT': "UNKOWN"}
 
-        for hand_index, etiqueta_manos in enumerate(etiqueta_manos):
-            color = (0, 0, 255)
+        for gesto_obj in self.gestos_:
+            gesto_obj.gesto_hecho(estados_dedos, gestos_manos)
 
-            if contador[etiqueta_manos] == 2 and estados_dedos[etiqueta_manos + '_MIDDLE'] and estados_dedos[
-                etiqueta_manos + '_INDEX']:
-                gestos_manos[etiqueta_manos] = GestosEnum.PAZ.value
-                color = (0, 255, 0)
-
-            if contador[etiqueta_manos] == 3 and estados_dedos[etiqueta_manos + '_THUMB'] and estados_dedos[
-                etiqueta_manos + '_INDEX'] and estados_dedos[etiqueta_manos + '_PINKY']:
-                gestos_manos[etiqueta_manos] = GestosEnum.SPIDERMAN.value
-
-            if contador[etiqueta_manos] == 5:
-                gestos_manos[etiqueta_manos] = GestosEnum.PALMA_ABIERTA.value
-                color = (0, 255, 0)
-
-            if dibujo:
-                cv2.putText(
-                    self.output_image, etiqueta_manos + ': ' + gestos_manos[etiqueta_manos],
-                    (10, (hand_index + 1) * 60), cv2.FONT_HERSHEY_PLAIN, 4, color, 5
-                )
+        print(gestos_manos)
         if display:
             self.mostrar_imagen(imagen_salida=self.output_image)
         else:
@@ -224,7 +227,6 @@ class ReconocimientoVideo(ReconocimientoI):
             if results.multi_hand_landmarks and any(
                     hand_gestures == self.gesto for hand_gestures in hand_gestures.values()
             ):
-                self.counter[self.gesto] += 1
                 self.filter_on = True
 
     def capturar_pantalla(self):

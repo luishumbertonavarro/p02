@@ -28,12 +28,8 @@ class Interfaz:
             elif event == 'File_Path':
                 self.__reconocimiento.cambiar_ruta_guardado_captura(values["File_Path"])
             elif values['File_Path'] != "" and event == "Ok" and values['gesto'] != "Seleccione un gesto":
-                if values['gesto'] == GestosEnum.SPIDERMAN.name:
-                    self.__reconocimiento.cambiar_valor_gesto(GestosEnum.SPIDERMAN)
-                if values['gesto'] == GestosEnum.PALMA_ABIERTA.name:
-                    self.__reconocimiento.cambiar_valor_gesto(GestosEnum.PALMA_ABIERTA)
-                if values['gesto'] == GestosEnum.PAZ.name:
-                    self.__reconocimiento.cambiar_valor_gesto(GestosEnum.PAZ)
+                print(values['gesto'])
+                self.__reconocimiento.cambiar_valor_gesto(values['gesto'])
                 self.abrir_recon(window)
         window.close()
 
