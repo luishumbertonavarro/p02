@@ -128,7 +128,7 @@ class ReconocimientoVideo(ReconocimientoI):
         else:
             return results
 
-    def contar_dedos(self, results, dibujo=True, display=True):
+    def contar_dedos(self, results, dibujo=False, display=True):
         if self.output_image is None:
             return
 
@@ -206,9 +206,9 @@ class ReconocimientoVideo(ReconocimientoI):
         return ok
 
     def configurar_camera_video(self):
-        self.camera_video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        self.camera_video = cv2.VideoCapture(1, cv2.CAP_DSHOW)
         self.camera_video.set(3, 1280)
-        self.camera_video.set(4, 960)
+        self.camera_video.set(4, 720)
 
     def reconocer(self):
         self.crear_carpeta_por_hora()
