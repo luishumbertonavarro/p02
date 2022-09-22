@@ -42,12 +42,6 @@ class Interfaz:
                     if gesto.nombre_gesto == values['gesto']:
                         window['gestoImg'].update(filename=gesto.img_referencia, size=(50, 50))
                         break
-                # image = Image.open('img/' + values['gesto']+'.png')
-                # image= image.resize((50,50),Image.ANTIALIAS)
-                # image.save('img/' + values['gesto']+'2.png')
-                # seleccionado = ('img/' + values['gesto'] + '.png')
-                # window['gestoImg'].update(filename='img/' + values['gesto']+'2.png', size=(50,50))
-
             elif event == 'File_Path':
                 self.__reconocimiento.cambiar_ruta_guardado_captura(values["File_Path"])
             elif values['gesto'] == "Seleccione un gesto":

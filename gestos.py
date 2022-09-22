@@ -14,7 +14,6 @@ class GestoClass:
         self.dedos.sort()
         try:
             picture = Image.open(img)
-
             path = os.path.join(os.getcwd(), 'images')
             if not os.path.exists(path):
                 os.makedirs(path)

@@ -75,18 +75,18 @@ class ReconocimientoVideo(ReconocimientoI):
         peace_sign = GestoClass(
             'PAZ',
             [DEDOSENUM.INDEX.value, DEDOSENUM.MIDDLE.value],
-            r"C:\Users\david\Desktop\img\PAZ2.png"
+            r"./recursos/PAZ.png"
         )
         spiderman_sign = GestoClass(
             'SPIDERMAN',
             [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value],
-            r"C:\Users\david\Desktop\img\SPIDERMAN2.png"
+            r"./recursos/SPIDERMAN.png"
         )
         palma_abierta = GestoClass(
             'PALMA_ABIERTA',
             [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value, DEDOSENUM.RING.value,
              DEDOSENUM.MIDDLE.value],
-            r"C:\Users\david\Desktop\img\PALMA_ABIERTA2.png"
+            r"./recursos/PALMA_ABIERTA.png"
         )
         self.gestos_.append(spiderman_sign)
         self.gestos_.append(peace_sign)
