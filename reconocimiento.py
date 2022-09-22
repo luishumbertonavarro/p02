@@ -7,7 +7,7 @@ import pyautogui
 from matplotlib import pyplot as plt
 
 from gestos import GestoClass
-from gestos_enum import GestosEnum, DEDOSENUM
+from enums import GestosEnum, DEDOSENUM
 
 
 class ReconocimientoI(ABC):
@@ -74,15 +74,19 @@ class ReconocimientoVideo(ReconocimientoI):
     def cargar_gestos_predeterminados(self):
         peace_sign = GestoClass(
             'PAZ',
-            [DEDOSENUM.INDEX.value, DEDOSENUM.MIDDLE.value]
+            [DEDOSENUM.INDEX.value, DEDOSENUM.MIDDLE.value],
+            r"C:\Users\david\Desktop\img\PAZ2.png"
         )
         spiderman_sign = GestoClass(
             'SPIDERMAN',
-            [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value]
+            [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value],
+            r"C:\Users\david\Desktop\img\SPIDERMAN2.png"
         )
         palma_abierta = GestoClass(
             'PALMA_ABIERTA',
-            [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value, DEDOSENUM.RING.value, DEDOSENUM.MIDDLE.value]
+            [DEDOSENUM.PINKY.value, DEDOSENUM.INDEX.value, DEDOSENUM.THUMB.value, DEDOSENUM.RING.value,
+             DEDOSENUM.MIDDLE.value],
+            r"C:\Users\david\Desktop\img\PALMA_ABIERTA2.png"
         )
         self.gestos_.append(spiderman_sign)
         self.gestos_.append(peace_sign)
@@ -237,6 +241,9 @@ class ReconocimientoVideo(ReconocimientoI):
             h = g.replace(" ", "")
             pyautogui.screenshot(self.direccion + h + '.png')
             self.filter_on = False
+
+    def hacer_accion(self):
+        pass
 
     def cerrar_ventanas(self):
         self.camera_video.release()

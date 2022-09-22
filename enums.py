@@ -14,3 +14,6 @@ class DEDOSENUM(Enum):
     RING = 'RING'
     PINKY = 'PINKY'
 
+
+class AccionesEnum(Enum):
+    pass

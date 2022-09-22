@@ -1,12 +1,28 @@
+import os
+
+from PIL import Image
+
+
 class GestoClass:
     dedos = []
 
     def __init__(
-            self, nombre_gesto, dedos
+            self, nombre_gesto, dedos, img
     ):
         self.nombre_gesto = nombre_gesto
         self.dedos = dedos
         self.dedos.sort()
+        try:
+            picture = Image.open(img)
+
+            path = os.path.join(os.getcwd(), 'images')
+            if not os.path.exists(path):
+                os.makedirs(path)
+            path = os.path.join(path, f'{nombre_gesto}.png')
+            picture.save(path)
+            self.img_referencia = path
+        except Exception as e:
+            print(e)
 
     def gesto_hecho(self, dedos_detectados, gestos_manos):
         mano_izquierda = [
@@ -23,4 +39,6 @@ class GestoClass:
         if self.dedos == mano_derecha:
             gestos_manos['RIGHT'] = self.nombre_gesto
 
+    def __str__(self):
+        return self.nombre_gesto
 

@@ -4,7 +4,7 @@ import PySimpleGUI as sg
 import cv2
 from PIL import Image
 
-from gestos_enum import GestosEnum
+from enums import GestosEnum
 from reconocimiento import ReconocimientoVideo
 
 
@@ -16,9 +16,13 @@ class Interfaz:
         def cargar_layout():
             return [
                 [sg.Text('Seleccione el gesto para la captura:', key="txtCombo")],
-                [sg.Combo(['PALMA_ABIERTA', 'SPIDERMAN', 'PAZ'], default_value='Seleccione un gesto', size=(19, 1),
-                          key='gesto', readonly=True, enable_events=True),
-                 sg.Image(filename='', size=(20, 20), key='gestoImg')],
+                [
+                    sg.Combo(
+                        ['PALMA_ABIERTA', 'SPIDERMAN', 'PAZ'], default_value='Seleccione un gesto', size=(19, 1),
+                        key='gesto', readonly=True, enable_events=True
+                    ),
+                    sg.Image(filename='', size=(20, 20), key='gestoImg')
+                ],
                 [sg.Text(key='errorCombo', text_color='red')],
                 [sg.Text("Seleccione una carpeta para guardar: ")],
                 [sg.In(enable_events=True, key='File_Path'), sg.FolderBrowse('Buscar')],
@@ -34,12 +38,15 @@ class Interfaz:
             if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
                 break
             elif event == 'gesto':
-
-                image = Image.open('img/' + values['gesto']+'.png')
-                image= image.resize((50,50),Image.ANTIALIAS)
-                image.save('img/' + values['gesto']+'2.png')
-                seleccionado = ('img/' + values['gesto'] + '.png')
-                window['gestoImg'].update(filename='img/' + values['gesto']+'2.png', size=(50,50))
+                for gesto in self.__reconocimiento.gestos_:
+                    if gesto.nombre_gesto == values['gesto']:
+                        window['gestoImg'].update(filename=gesto.img_referencia, size=(50, 50))
+                        break
+                # image = Image.open('img/' + values['gesto']+'.png')
+                # image= image.resize((50,50),Image.ANTIALIAS)
+                # image.save('img/' + values['gesto']+'2.png')
+                # seleccionado = ('img/' + values['gesto'] + '.png')
+                # window['gestoImg'].update(filename='img/' + values['gesto']+'2.png', size=(50,50))
 
             elif event == 'File_Path':
                 self.__reconocimiento.cambiar_ruta_guardado_captura(values["File_Path"])
