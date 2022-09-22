@@ -48,9 +48,7 @@ class Interfaz:
                 window['errorCombo'].update('Por favor seleccione un gesto')
             elif values['File_Path'] == "":
                 window['errorFolder'].update('Por favor seleccione una ubicacion para guardar el archivo')
-
             elif values['File_Path'] != "" and event == "Ok" and values['gesto'] != "Seleccione un gesto":
-                print(values['gesto'])
                 self.__reconocimiento.cambiar_valor_gesto(values['gesto'])
                 self.abrir_recon(window)
         window.close()

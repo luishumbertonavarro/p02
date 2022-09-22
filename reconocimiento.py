@@ -42,7 +42,6 @@ class ReconocimientoI(ABC):
             plt.imshow(args[1][:, :, ::-1])
             plt.title(f"Imagen {args[0]}")
             plt.axis('off')
-
         [plot_image(key, value) for key, value in kwargs.items()]
 
 
@@ -123,8 +122,9 @@ class ReconocimientoVideo(ReconocimientoI):
                     self.output_image,
                     landmark_list=hand_landmarks,
                     connections=self.mp_manos.HAND_CONNECTIONS,
-                    landmark_drawing_spec=self.mp_dibujo.DrawingSpec(color=(255, 255, 255), thickness=2,
-                                                                     circle_radius=2),
+                    landmark_drawing_spec=self.mp_dibujo.DrawingSpec(
+                        color=(255, 255, 255), thickness=2, circle_radius=2
+                    ),
                     connection_drawing_spec=self.mp_dibujo.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
                 )
         if display:
@@ -157,19 +157,16 @@ class ReconocimientoVideo(ReconocimientoI):
             etiqueta_marcas = results.multi_hand_landmarks[index_mano]
 
             for punta_indice in punta_dedos_ids:
-
                 nombre_dedo = punta_indice.name.split("_")[0]
-
                 if etiqueta_marcas.landmark[punta_indice].y < etiqueta_marcas.landmark[punta_indice - 2].y:
                     estado_dedos[etiqueta_mano.upper() + "_" + nombre_dedo] = True
-
                     count[etiqueta_mano.upper()] += 1
 
             pulgar_punta_x = etiqueta_marcas.landmark[self.mp_manos.HandLandmark.THUMB_TIP].x
             pulgar_mcp_x = etiqueta_marcas.landmark[self.mp_manos.HandLandmark.THUMB_TIP - 2].x
 
-            if (etiqueta_mano == 'Right' and (pulgar_punta_x < pulgar_mcp_x)) or (
-                    etiqueta_mano == 'Left' and (pulgar_punta_x > pulgar_mcp_x)):
+            if (etiqueta_mano == 'Right' and (pulgar_punta_x < pulgar_mcp_x)) or \
+                    (etiqueta_mano == 'Left' and (pulgar_punta_x > pulgar_mcp_x)):
                 estado_dedos[etiqueta_mano.upper() + "_THUMB"] = True
                 count[etiqueta_mano.upper()] += 1
 
