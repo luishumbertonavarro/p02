@@ -5,12 +5,13 @@ import cv2
 from PIL import Image
 
 from enums import GestosEnum
-from reconocimiento import ReconocimientoVideo
+from reconocimiento import ReconocimientoVideo, ConcreteStrategyAccion
 
 
 class Interfaz:
     sg.theme('DarkAmber')
-    __reconocimiento = ReconocimientoVideo()
+    __accion= ConcreteStrategyAccion()
+    __reconocimiento = ReconocimientoVideo(__accion)
 
     def principal(self):
         def cargar_layout():
@@ -72,7 +73,7 @@ class Interfaz:
         while self.__reconocimiento.camera_video.isOpened():
             self.__reconocimiento.reconocer()
             if timer % 30 == 0:
-                self.__reconocimiento.capturar_pantalla()
+               """self.__reconocimiento.capturar_pantalla()"""
             event, values = window.read(timeout=20)
             if event == sg.WIN_CLOSED or event == 'Cerrar':  # if user closes window or clicks cancel
                 break

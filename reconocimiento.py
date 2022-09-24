@@ -42,15 +42,31 @@ class ReconocimientoI(ABC):
             plt.imshow(args[1][:, :, ::-1])
             plt.title(f"Imagen {args[0]}")
             plt.axis('off')
+
         [plot_image(key, value) for key, value in kwargs.items()]
+
+
+class AccionEstrategia(ABC):
+    """
+    The Strategy interface declares operations common to all supported versions
+    of some algorithm.
+
+    The Context uses this interface to call the algorithm defined by Concrete
+    Strategies.
+    """
+
+    @abstractmethod
+    def capturar_pantalla(self, **kwargs):
+        pass
 
 
 class ReconocimientoVideo(ReconocimientoI):
     usuarioWindows = os.getenv('username')
     gestos_ = []
 
-    def __init__(self):
+    def __init__(self, accion_estrategia: AccionEstrategia):
         super().__init__()
+        self.accion_estrategia = accion_estrategia
         self.filter_on = None
         self.camera_video = None
         self.contador = 0
@@ -228,9 +244,9 @@ class ReconocimientoVideo(ReconocimientoI):
             if results.multi_hand_landmarks and any(
                     hand_gestures == self.gesto for hand_gestures in hand_gestures.values()
             ):
-                self.filter_on = True
+                self.accion_estrategia.capturar_pantalla(direccion=self.direccion)
 
-    def capturar_pantalla(self):
+    '''def capturar_pantalla(self):
         if self.filter_on:
             e = str(datetime.datetime.now())
             f = e.replace(":", "")
@@ -238,10 +254,19 @@ class ReconocimientoVideo(ReconocimientoI):
             h = g.replace(" ", "")
             pyautogui.screenshot(self.direccion + h + '.png')
             self.filter_on = False
-
+'''
     def hacer_accion(self):
         pass
 
     def cerrar_ventanas(self):
         self.camera_video.release()
         cv2.destroyAllWindows()
+
+
+class ConcreteStrategyAccion(AccionEstrategia):
+    def capturar_pantalla(self, direccion):
+        e = str(datetime.datetime.now())
+        f = e.replace(":", "")
+        g = f.replace(".", "")
+        h = g.replace(" ", "")
+        pyautogui.screenshot(direccion + h + '.png')
