@@ -195,7 +195,6 @@ class ReconocimientoVideo(ReconocimientoI):
         for gesto_obj in self.gestos_:
             gesto_obj.gesto_hecho(estados_dedos, gestos_manos)
 
-        print(gestos_manos)
         if display:
             self.mostrar_imagen(imagen_salida=self.output_image)
         else:
@@ -231,19 +230,6 @@ class ReconocimientoVideo(ReconocimientoI):
                     hand_gestures == self.gesto for hand_gestures in hand_gestures.values()
             ):
                 self.filter_on = True
-                # self.accion_estrategia.capturar_pantalla(direccion=self.direccion)
-
-    '''def capturar_pantalla(self):
-        if self.filter_on:
-            e = str(datetime.datetime.now())
-            f = e.replace(":", "")
-            g = f.replace(".", "")
-            h = g.replace(" ", "")
-            pyautogui.screenshot(self.direccion + h + '.png')
-            self.filter_on = False
-'''
-    def hacer_accion(self):
-        pass
 
     def cerrar_ventanas(self):
         self.camera_video.release()
