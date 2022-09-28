@@ -44,8 +44,6 @@ class Interfaz:
             if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
                 break
             elif event == self.llave_gesto:
-                # CREAR UN FOR QUE RECORRA EL OBJ Y CONCATENAR A BTNGESTO CON EL NOMBRE
-
                 window[self.llave_gesto].update(button_color='red')
                 window['gestoSeleccionado'].update(
                     'Seleccionaste el gesto ' + gesto_seleccionado[1] + ' para la captura de pantalla')
