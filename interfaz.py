@@ -1,16 +1,12 @@
-import io
-
 import PySimpleGUI as sg
 import cv2
-from PIL import Image
-
-from enums import GestosEnum
-from reconocimiento import ReconocimientoVideo, ConcreteStrategyAccion
+from reconocimiento import ReconocimientoVideo
+from strategy import CapturarPantallaStrategyAccion
 
 
 class Interfaz:
     sg.theme('DarkAmber')
-    __accion= ConcreteStrategyAccion()
+    __accion = CapturarPantallaStrategyAccion()
     __reconocimiento = ReconocimientoVideo(__accion)
 
     def principal(self):
@@ -73,7 +69,8 @@ class Interfaz:
         while self.__reconocimiento.camera_video.isOpened():
             self.__reconocimiento.reconocer()
             if timer % 30 == 0:
-               """self.__reconocimiento.capturar_pantalla()"""
+                self.__reconocimiento.accion_estrategia.realizar_accion(direccion=self.__reconocimiento.direccion)
+                self.__reconocimiento.filter_on = False
             event, values = window.read(timeout=20)
             if event == sg.WIN_CLOSED or event == 'Cerrar':  # if user closes window or clicks cancel
                 break

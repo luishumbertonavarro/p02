@@ -3,11 +3,11 @@ import os
 from abc import ABC, abstractmethod
 import cv2
 import mediapipe as mp
-import pyautogui
 from matplotlib import pyplot as plt
 
 from gestos import GestoClass
 from enums import GestosEnum, DEDOSENUM
+from strategy import AccionEstrategia
 
 
 class ReconocimientoI(ABC):
@@ -44,20 +44,6 @@ class ReconocimientoI(ABC):
             plt.axis('off')
 
         [plot_image(key, value) for key, value in kwargs.items()]
-
-
-class AccionEstrategia(ABC):
-    """
-    The Strategy interface declares operations common to all supported versions
-    of some algorithm.
-
-    The Context uses this interface to call the algorithm defined by Concrete
-    Strategies.
-    """
-
-    @abstractmethod
-    def capturar_pantalla(self, **kwargs):
-        pass
 
 
 class ReconocimientoVideo(ReconocimientoI):
@@ -204,7 +190,7 @@ class ReconocimientoVideo(ReconocimientoI):
         if self.output_image is None:
             return
 
-        gestos_manos = {'RIGHT': "UNKNOWN", 'LEFT': "UNKOWN"}
+        gestos_manos = {'RIGHT': "UNKNOWN", 'LEFT': "UNKNOWN"}
 
         for gesto_obj in self.gestos_:
             gesto_obj.gesto_hecho(estados_dedos, gestos_manos)
@@ -223,7 +209,7 @@ class ReconocimientoVideo(ReconocimientoI):
         return ok
 
     def configurar_camera_video(self):
-        self.camera_video = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+        self.camera_video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         self.camera_video.set(3, 1280)
         self.camera_video.set(4, 720)
 
@@ -244,7 +230,8 @@ class ReconocimientoVideo(ReconocimientoI):
             if results.multi_hand_landmarks and any(
                     hand_gestures == self.gesto for hand_gestures in hand_gestures.values()
             ):
-                self.accion_estrategia.capturar_pantalla(direccion=self.direccion)
+                self.filter_on = True
+                # self.accion_estrategia.capturar_pantalla(direccion=self.direccion)
 
     '''def capturar_pantalla(self):
         if self.filter_on:
@@ -262,11 +249,3 @@ class ReconocimientoVideo(ReconocimientoI):
         self.camera_video.release()
         cv2.destroyAllWindows()
 
-
-class ConcreteStrategyAccion(AccionEstrategia):
-    def capturar_pantalla(self, direccion):
-        e = str(datetime.datetime.now())
-        f = e.replace(":", "")
-        g = f.replace(".", "")
-        h = g.replace(" ", "")
-        pyautogui.screenshot(direccion + h + '.png')
