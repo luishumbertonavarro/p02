@@ -10,13 +10,18 @@ from reconocimiento import ReconocimientoVideo, ConcreteStrategyAccion
 
 class Interfaz:
     sg.theme('DarkAmber')
-    __accion= ConcreteStrategyAccion()
+    __accion = ConcreteStrategyAccion()
     __reconocimiento = ReconocimientoVideo(__accion)
-
+    obj = __reconocimiento.gestos_
+    llave_gesto=''
     def principal(self):
         def cargar_layout():
             return [
                 [sg.Text('Seleccione el gesto para la captura:', key="txtCombo")],
+                [sg.Button(image_source=txt.img_referencia, button_color='white', key='btnGesto-' + txt.nombre_gesto)
+                 for txt in self.obj],
+                [sg.Text(key='gestoSeleccionado', text_color='white')],
+
                 [
                     sg.Combo(
                         ['PALMA_ABIERTA', 'SPIDERMAN', 'PAZ'], default_value='Seleccione un gesto', size=(19, 1),
@@ -34,10 +39,21 @@ class Interfaz:
         # Create the Window
         window = sg.Window('Reconocimiento de gestos', cargar_layout(), resizable=True)
         # Event Loop to process "events" and get the "values" of the inputs
+
         while True:
             event, values = window.read()
+            gesto_seleccionado = event.split("-")
+            if gesto_seleccionado[0].startswith('btnGesto'):
+                self.llave_gesto = gesto_seleccionado[0] + "-" + gesto_seleccionado[1]
             if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
                 break
+            elif event == self.llave_gesto:
+                # CREAR UN FOR QUE RECORRA EL OBJ Y CONCATENAR A BTNGESTO CON EL NOMBRE
+
+                window[self.llave_gesto].update(button_color='red')
+                window['gestoSeleccionado'].update(
+                    'Seleccionaste el gesto ' + gesto_seleccionado[1] + ' para la captura de pantalla')
+
             elif event == 'gesto':
                 for gesto in self.__reconocimiento.gestos_:
                     if gesto.nombre_gesto == values['gesto']:
@@ -50,7 +66,7 @@ class Interfaz:
             elif values['File_Path'] == "":
                 window['errorFolder'].update('Por favor seleccione una ubicacion para guardar el archivo')
             elif values['File_Path'] != "" and event == "Ok" and values['gesto'] != "Seleccione un gesto":
-                self.__reconocimiento.cambiar_valor_gesto(values['gesto'])
+                self.__reconocimiento.cambiar_valor_gesto(gesto_seleccionado[1])
                 self.abrir_recon(window)
         window.close()
 
@@ -73,7 +89,7 @@ class Interfaz:
         while self.__reconocimiento.camera_video.isOpened():
             self.__reconocimiento.reconocer()
             if timer % 30 == 0:
-               """self.__reconocimiento.capturar_pantalla()"""
+                """self.__reconocimiento.capturar_pantalla()"""
             event, values = window.read(timeout=20)
             if event == sg.WIN_CLOSED or event == 'Cerrar':  # if user closes window or clicks cancel
                 break
