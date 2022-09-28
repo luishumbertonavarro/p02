@@ -208,7 +208,7 @@ class ReconocimientoVideo(ReconocimientoI):
         return ok
 
     def configurar_camera_video(self):
-        self.camera_video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        self.camera_video = cv2.VideoCapture(1, cv2.CAP_DSHOW)
         self.camera_video.set(3, 1280)
         self.camera_video.set(4, 720)
 
