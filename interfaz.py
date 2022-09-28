@@ -8,16 +8,17 @@ class Interfaz:
     sg.theme('DarkAmber')
     __accion = CapturarPantallaStrategyAccion()
     __reconocimiento = ReconocimientoVideo(__accion)
-    obj = __reconocimiento.gestos_
-    llave_gesto=''
+    llave_gesto = ''
+
     def principal(self):
         def cargar_layout():
             return [
                 [sg.Text('Seleccione el gesto para la captura:', key="txtCombo")],
-                [sg.Button(image_source=txt.img_referencia, button_color='white', key='btnGesto-' + txt.nombre_gesto)
-                 for txt in self.obj],
+                [
+                    sg.Button(image_source=gesto.img_referencia, button_color='white', key='btnGesto-' + gesto.nombre_gesto)
+                    for gesto in self.__reconocimiento.gestos_
+                ],
                 [sg.Text(key='gestoSeleccionado', text_color='white')],
-
                 [
                     sg.Combo(
                         ['PALMA_ABIERTA', 'SPIDERMAN', 'PAZ'], default_value='Seleccione un gesto', size=(19, 1),
@@ -45,11 +46,14 @@ class Interfaz:
                 break
             elif event == self.llave_gesto:
                 # CREAR UN FOR QUE RECORRA EL OBJ Y CONCATENAR A BTNGESTO CON EL NOMBRE
-
+                [
+                    window[f'btnGesto-{gesto.nombre_gesto}'].update(button_color='white')
+                    for gesto in self.__reconocimiento.gestos_
+                ]
                 window[self.llave_gesto].update(button_color='red')
                 window['gestoSeleccionado'].update(
-                    'Seleccionaste el gesto ' + gesto_seleccionado[1] + ' para la captura de pantalla')
-
+                    'Seleccionaste el gesto ' + gesto_seleccionado[1] + ' para la captura de pantalla'
+                )
             elif event == 'gesto':
                 for gesto in self.__reconocimiento.gestos_:
                     if gesto.nombre_gesto == values['gesto']:
