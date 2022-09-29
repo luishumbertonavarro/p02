@@ -89,8 +89,9 @@ class Interfaz:
         while self.__reconocimiento.camera_video.isOpened():
             self.__reconocimiento.reconocer()
             if timer % 30 == 0:
-                self.__reconocimiento.accion_estrategia.realizar_accion(direccion=self.__reconocimiento.direccion)
-                self.__reconocimiento.filter_on = False
+                if self.__reconocimiento.filter_on:
+                    self.__reconocimiento.accion_estrategia.realizar_accion(direccion=self.__reconocimiento.direccion)
+                    self.__reconocimiento.filter_on = False
             event, values = window.read(timeout=20)
             if event == sg.WIN_CLOSED or event == 'Cerrar':  # if user closes window or clicks cancel
                 break
