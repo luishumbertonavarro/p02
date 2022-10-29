@@ -95,7 +95,7 @@ class ReconocimientoVideo(ReconocimientoI):
 
     def crear_carpeta_por_hora(self):
         tiempo_actual = datetime.datetime.now()
-        ruta = f'clase {tiempo_actual.day} de {tiempo_actual.month} del {tiempo_actual.year} hora {tiempo_actual.hour}/'
+        ruta = f'clase del {tiempo_actual.day} de {tiempo_actual.month} de {tiempo_actual.year} hora {tiempo_actual.hour}/'
         carpetas = self.direccion.split('/')
         if carpetas[-2].startswith('clase'):
             self.direccion = self.direccion[:(self.direccion.rindex('/c') + 1)]

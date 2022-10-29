@@ -30,7 +30,7 @@ class Interfaz:
         # Create the Window
         window = sg.Window('Reconocimiento de gestos', cargar_layout(), resizable=True)
         # Event Loop to process "events" and get the "values" of the inputs
-
+        self.llave_gesto=None
         while True:
             event, values = window.read()
 
