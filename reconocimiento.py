@@ -67,6 +67,7 @@ class ReconocimientoVideo(ReconocimientoI):
             os.makedirs(self.direccion)
 
     def crear_gesto(self, nuevo_gesto: GestoClass):
+
         self.gestos_.append(nuevo_gesto)
 
     def cambiar_valor_gesto(self, nuevo_gesto: str):
