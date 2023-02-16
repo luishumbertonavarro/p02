@@ -86,18 +86,23 @@ class Principal:
             if event == "Cancelar" or event == sg.WIN_CLOSED:
                 break
             elif event == "m":
-                app = msal.ConfidentialClientApplication(
-                    "b53b903f-de28-4550-b1fd-d76e5b0da349", authority="https://login.microsoftonline.com/882acd0c-efe8-47ec-8a8d-65214b87e2bc",
-                    client_credential=".4L8Q~VnVOPeKKDwQ9j46EFu5pU27pBAx7KWYcdh",
+                SCOPES = ['User.Read']
+                app2 = msal.ConfidentialClientApplication(
+                    app_config.CLIENT_ID, authority=app_config.AUTHORITY,
+                    client_credential=app_config.CLIENT_SECRET
                 )
+                authorization_url = app2.get_authorization_request_url(SCOPES)
+                print(authorization_url)
+                webbrowser.open(authorization_url)
+                autorization_code = '68a20d07-0850-40d2-8422-14f52299391e'
+                access_token = app2.acquire_token_by_authorization_code(code=autorization_code, scopes=SCOPES)
 
-                result = None
-                result = app.acquire_token_silent(["https://graph.microsoft.com/.default"], account=None)
-
-                if not result:
-                    #logging.info("No suitable token exists in cache. Let's get a new one from AAD.")
-                    result = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
-
+                # result = app2.acquire_token_for_client(scopes=app_config.APPLICATION_PERMISSIONS)
+                # token = result['access_token']
+                result = app2.acquire_token_for_client(scopes=app_config.APPLICATION_PERMISSIONS)
+                token = result['access_token']
+                if token:
+                    print(token)
                 if "access_token" in result:
                     graph_data = requests.get(
                         "https://graph.microsoft.com/v1.0/users",
