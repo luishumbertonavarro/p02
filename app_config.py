@@ -1,6 +1,7 @@
 import os
 
-CLIENT_SECRET = ".4L8Q~VnVOPeKKDwQ9j46EFu5pU27pBAx7KWYcdh"
+#CLIENT_SECRET = ".4L8Q~VnVOPeKKDwQ9j46EFu5pU27pBAx7KWYcdh"
+CLIENT_SECRET = 'O.h8Q~ejot.pQJRlrZc~NCJ4AZE26RMjJJKMdaW0'
 # In your production app, we recommend you to use other ways to store your secret,
 # such as KeyVault, or environment variable as described in Flask's documentation here
 # https://flask.palletsprojects.com/en/1.1.x/config/#configuring-from-environment-variables
@@ -12,7 +13,9 @@ CLIENT_SECRET = ".4L8Q~VnVOPeKKDwQ9j46EFu5pU27pBAx7KWYcdh"
 AUTHORITY = "https://login.microsoftonline.com/882acd0c-efe8-47ec-8a8d-65214b87e2bc"
 
 
-CLIENT_ID = "b53b903f-de28-4550-b1fd-d76e5b0da349"
+#CLIENT_ID = "b53b903f-de28-4550-b1fd-d76e5b0da349"
+CLIENT_ID = '51e2947b-08cc-4ec3-8baf-f8d0a5c31bd8'
+
 
 REDIRECT_PATH = "/getAToken"  # It will be used to form an absolute URL
 # And that absolute URL must match your app's redirect_uri set in AAD
@@ -67,4 +70,4 @@ else:
 # In case AAD Role check is true, the user claimes in the id token are used to verify if user is allowed to retrieve data
 # Notice that user shall also be added to the database as externa user and be granted the correct roles to retrieve data from tables
 AAD_ROLE_CHECK = False
-SCOPE = ["User.ReadBasic.All"]
+SCOPE = ["User.Read"]

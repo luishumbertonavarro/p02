@@ -40,8 +40,10 @@ class Interfaz:
         day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
         moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
         fechahoy = day + '/' + moth + '/' + str(current_time.year)
-        sql = "SELECT u.* FROM session s INNER JOIN usuario u on u.id = s.iduser WHERE s.valido = 1 AND s.fecha_session = '" + fechahoy + "'"
+        sql = "SELECT u.* FROM session s INNER JOIN usuario u on u.id = s.iduser WHERE s.valido = 1 AND s.fecha_session = '" + fechahoy + "' ORDER BY s.id DESC"
         result = self.db.ejecutar_consulta(sql).fetchone()
+        if not result:
+            exit()
         self.menssaje = 'Hola '+str(result[1])
         # Create the Window
         window = sg.Window('Reconocimiento de gestos', cargar_layout(), resizable=True, size=(900, 600))

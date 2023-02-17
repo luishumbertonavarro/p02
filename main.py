@@ -12,7 +12,7 @@ if __name__ == '__main__':
     day = '0'+str(current_time.day) if (current_time.day < 10) else str(current_time.day)
     moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
     fechahoy = day+'/'+moth+'/'+str(current_time.year)
-    sql = "SELECT u.* FROM session s INNER JOIN usuario u on u.id = s.iduser WHERE s.valido = 1 AND s.fecha_session = '"+fechahoy+"'"
+    sql = "SELECT u.* FROM session s INNER JOIN usuario u on u.id = s.iduser WHERE s.valido = 1 AND s.fecha_session = '" + fechahoy + "' ORDER BY s.id DESC "
     #parametros = (fechahoy,)
     result = db.ejecutar_consulta(sql).fetchone()
 

@@ -1,12 +1,19 @@
 import PySimpleGUI as sg
+import hashlib
+from selenium.webdriver.support.wait import WebDriverWait
+
 import conexion as conn
-import msal
+from msal import ConfidentialClientApplication, PublicClientApplication
 import app_config
 import webbrowser
 import datetime
 import requests
 from interfaz import Interfaz
 from flask import Flask, render_template, session, request, redirect, url_for
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+
 username = ''
 password = ''
 #PROGRESS BAR
@@ -75,9 +82,9 @@ class Principal:
         layout = [[sg.Text("Inicie sesion para Comenzar", size=(30, 1), font=55)],
                   [sg.Text("Usuario", size=(15, 1), font=16), sg.InputText(key='-usrnm-', font=16)],
                   [sg.Text("Contraseña", size=(15, 1), font=16), sg.InputText(key='-pwd-', password_char='*', font=16)],
-                  [sg.Button('Iniciar',size=(10, 2)), sg.Button('Cancelar',size=(10, 2))],
+                  [sg.Button('Iniciar',size=(10, 2)), sg.Button('Cancelar',size=(10, 2)), sg.Button('Registrarse',size=(10, 2))],
                   [sg.Text("Iniciar con:", size=(30, 1), font=55)],
-                  [sg.Button('m', image_data=msc_base64)]]
+                  [sg.Button('.', image_data=msc_base64)]]
 
         window = sg.Window("Reconocedor de gestos", layout)
 
@@ -85,60 +92,107 @@ class Principal:
             event, values = window.read()
             if event == "Cancelar" or event == sg.WIN_CLOSED:
                 break
-            elif event == "m":
+            elif event == ".":
                 SCOPES = ['User.Read']
-                app2 = msal.ConfidentialClientApplication(
-                    app_config.CLIENT_ID, authority=app_config.AUTHORITY,
-                    client_credential=app_config.CLIENT_SECRET
-                )
-                authorization_url = app2.get_authorization_request_url(SCOPES)
-                print(authorization_url)
-                webbrowser.open(authorization_url)
-                autorization_code = '68a20d07-0850-40d2-8422-14f52299391e'
-                access_token = app2.acquire_token_by_authorization_code(code=autorization_code, scopes=SCOPES)
-
-                # result = app2.acquire_token_for_client(scopes=app_config.APPLICATION_PERMISSIONS)
-                # token = result['access_token']
-                result = app2.acquire_token_for_client(scopes=app_config.APPLICATION_PERMISSIONS)
-                token = result['access_token']
-                if token:
-                    print(token)
-                if "access_token" in result:
-                    graph_data = requests.get(
-                        "https://graph.microsoft.com/v1.0/users",
-                        headers={'Authorization': 'Bearer ' + result['access_token']}, ).json()
-                    print("Graph API call result: %s" % json.dumps(graph_data, indent=2))
-
-                    #sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES (' + str(
-                    ##    result[0]) + ',1,"' + fechahoy + '")'
-                    #resultsession = db.ejecutar_consulta(sql)
+                client = ConfidentialClientApplication(client_id=app_config.CLIENT_ID, client_credential=app_config.CLIENT_SECRET)
+                authori_url = client.get_authorization_request_url(SCOPES)
+                print(authori_url)
+                driver = webdriver.Chrome()
+                driver.get(authori_url)
+                wait = WebDriverWait(driver, 60)
+                element = wait.until(EC.url_contains("?code="))
+                strUrl = driver.current_url
+                ide = strUrl.index('code=')+5
+                authcode = strUrl[ide:]
+                print(authcode)
+                accestoekn = client.acquire_token_by_authorization_code(code=authcode, scopes=SCOPES)
+                data1 = accestoekn['id_token_claims']['name']
+                userna = accestoekn['id_token_claims']['preferred_username']
+                print(accestoekn)
+                sql = 'SELECT * FROM usuario WHERE usuario = "' + userna + '"'
+                result = db.ejecutar_consulta(sql).fetchone()
+                if not result:
+                    sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("'+data1+'","'+userna+'","","'+authcode+'") '
+                    resultsession = db.ejecutar_consulta(sql)
+                    current_time = datetime.datetime.now()
+                    day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
+                    moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
+                    fechahoy = day + '/' + moth + '/' + str(current_time.year)
+                    sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES (' + str(
+                        result[0]) + ',1,"' + fechahoy + '")'
+                    resultsession = db.ejecutar_consulta(sql)
+                else:
+                    current_time = datetime.datetime.now()
+                    day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
+                    moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
+                    fechahoy = day + '/' + moth + '/' + str(current_time.year)
+                    sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES (' + str(result[0]) + ',1,"' + fechahoy + '")'
+                    resultsession = db.ejecutar_consulta(sql)
+                #guardar session
+                driver.close()
+                window.close()
                 # si es correcto iniciamos
-                # interfaz = Interfaz()
-                # interfaz.principal()
-            else:
-                if event == "Iniciar":
-                    user=values['-usrnm-']
-                    pasw=values['-pwd-']
-                    sql = 'SELECT * FROM usuario WHERE usuario = "'+user+'" and clave = "'+pasw+'"'
-                    result = db.ejecutar_consulta(sql).fetchone()
-                    if not result:
-                        sg.popup("Usuario no encontrado!")
+                interfaz = Interfaz()
+                interfaz.principal()
+            elif event == "Iniciar":
+               user = values['-usrnm-']
+               pasw = values['-pwd-']
+               paswmd5 = hashlib.md5(pasw.encode())
+               pswd = paswmd5.hexdigest()
+               sql = 'SELECT * FROM usuario WHERE usuario = "'+user+'" and clave = "'+pswd+'"'
+               result = db.ejecutar_consulta(sql).fetchone()
+               if not result:
+                  sg.popup("Usuario no encontrado!")
+                  break
+               else:
+                  userini=result[1]
+                  sg.popup("Bienvenido "+userini)
+                  sql = 'SELECT * FROM session WHERE iduser = ' + str(result[0])
+                  resultsession = db.ejecutar_consulta(sql).fetchone()
+                  if not  resultsession:
+                     current_time = datetime.datetime.now()
+                     day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
+                     moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
+                     fechahoy = day + '/' + moth + '/' + str(current_time.year)
+                     sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES ('+str(result[0])+',1,"'+fechahoy+'")'
+                     resultsession = db.ejecutar_consulta(sql)
+                     window.close()
+                  interfaz = Interfaz()
+                  interfaz.principal()
+            elif event == "Registrarse":
+                global username, password
+                sg.theme('DarkAmber')
+                layout = [[sg.Text("Registrate", size=(15, 1), font=55, justification='c')],
+                          [sg.Text("Nombre Completo", size=(15, 1), font=16), sg.InputText(key='-email-', font=16)],
+                          [sg.Text("Crear Usuario", size=(15, 1), font=16), sg.InputText(key='-username-', font=16)],
+                          [sg.Text("Crear Password", size=(15, 1), font=16),
+                           sg.InputText(key='-password-', font=16, password_char='*')],
+                          [sg.Button("Completar"), sg.Button("Cancel")]]
+
+                window = sg.Window("Sign Up", layout)
+
+                while True:
+                    event, values = window.read()
+                    if event == 'Cancel' or event == sg.WIN_CLOSED:
                         break
                     else:
-                        userini=result[1]
-                        sg.popup("Bienvenido "+userini)
-                        sql = 'SELECT * FROM session WHERE iduser = ' + str(result[0])
-                        resultsession = db.ejecutar_consulta(sql).fetchone()
-                        if not  resultsession:
-                            current_time = datetime.datetime.now()
-                            day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
-                            moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
-                            fechahoy = day + '/' + moth + '/' + str(current_time.year)
-                            sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES ('+str(result[0])+',1,"'+fechahoy+'")'
-                            resultsession = db.ejecutar_consulta(sql)
-                        window.close()
-                        interfaz = Interfaz()
-                        interfaz.principal()
+                        if event == "Completar":
+                            nombre = values['-email-']
+                            password = values['-password-']
+                            username = values['-username-']
+                            passmd5 = hashlib.md5(password.encode())
+                            pswr = passmd5.hexdigest()
+                            sql = 'SELECT * FROM usuario WHERE usuario = "' + username + '"'
+                            result = db.ejecutar_consulta(sql).fetchone()
+                            if not result:
+                                sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("' + nombre + '","' + username + '","'+pswr+'","") '
+                                resultsession = db.ejecutar_consulta(sql)
+                                sg.popup("Usuario registrado correctamente!")
+                                window.close()
+                            else:
+                                sg.popup_error("Usuario existe", font=16)
+                                continue
+                window.close()
 
         window.close()
 
