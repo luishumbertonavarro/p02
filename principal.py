@@ -9,7 +9,6 @@ import webbrowser
 import datetime
 import requests
 from interfaz import Interfaz
-from flask import Flask, render_template, session, request, redirect, url_for
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -119,7 +118,7 @@ class Principal:
                     moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
                     fechahoy = day + '/' + moth + '/' + str(current_time.year)
                     sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES (' + str(
-                        result[0]) + ',1,"' + fechahoy + '")'
+                        resultsession[0]) + ',1,"' + fechahoy + '")'
                     resultsession = db.ejecutar_consulta(sql)
                 else:
                     current_time = datetime.datetime.now()

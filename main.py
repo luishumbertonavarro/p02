@@ -21,8 +21,9 @@ if __name__ == '__main__':
     if result is None:
         principal = Principal()
         principal.login()
-    else:
+
+    '''else:
         interfaz = Interfaz()
-        interfaz.principal()
+        interfaz.principal()'''
 
 
