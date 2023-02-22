@@ -54,6 +54,7 @@ class Interfaz:
             event, values = window.read()
 
             if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
+                window.close()
                 break
             elif event == "Cerrar":
                 sql = 'UPDATE session SET valido = 0'
