@@ -6,6 +6,7 @@ CLIENT_SECRET = 'O.h8Q~ejot.pQJRlrZc~NCJ4AZE26RMjJJKMdaW0'
 # such as KeyVault, or environment variable as described in Flask's documentation here
 # https://flask.palletsprojects.com/en/1.1.x/config/#configuring-from-environment-variables
 # CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+
 # if not CLIENT_SECRET:
 #     raise ValueError("Need to define CLIENT_SECRET environment variable")
 

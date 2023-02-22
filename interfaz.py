@@ -33,7 +33,8 @@ class Interfaz:
                 [sg.Button('Ok',size=(10, 2)), sg.Button('Cancel',size=(10, 2))],
                 [sg.Text('Agregar nuevo gesto', key="txtAdd"),
                  sg.Button(image_source='recursos/plus.png', image_size=(50, 50), button_color=("white", "#E7C829"),
-                           key="btnAddWindow")]
+                           key="btnAddWindow")],
+                [sg.Button('Cerrar',size=(10, 2))],
             ]
 
         current_time = datetime.datetime.now()
@@ -53,6 +54,10 @@ class Interfaz:
             event, values = window.read()
 
             if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
+                break
+            elif event == "Cerrar":
+                sql = 'UPDATE session SET valido = 0'
+                resultsession = self.db.ejecutar_consulta(sql)
                 break
             if '-' in event:
                 gesto_seleccionado = event.split("-")
@@ -78,6 +83,7 @@ class Interfaz:
             elif event == "Ok" and self.llave_gesto is not None and values['File_Path'] != '':
                 self.__reconocimiento.cambiar_valor_gesto(self.llave_gesto.split('-')[1])
                 self.abrir_recon(window)
+
 
         window.close()
 

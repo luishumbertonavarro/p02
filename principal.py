@@ -21,6 +21,7 @@ msc_base64='iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAAIGNIUk0AAHolAACAgwAA
 
 db = conn.DB()
 
+
 class Principal:
 
     def create_account():
@@ -76,7 +77,7 @@ class Principal:
             cache.deserialize(session["token_cache"])
         return cache
 
-    def login():
+    def login(self):
         global username, password
         sg.theme("DarkAmber")
         layout = [[sg.Text("Inicie sesion para Comenzar", size=(30, 1), font=55)],
@@ -114,6 +115,8 @@ class Principal:
                 if not result:
                     sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("'+data1+'","'+userna+'","","'+authcode+'") '
                     resultsession = db.ejecutar_consulta(sql)
+                    sql = 'SELECT * FROM usuario WHERE usuario = "' + userna + '"'
+                    result = db.ejecutar_consulta(sql).fetchone()
                     current_time = datetime.datetime.now()
                     day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
                     moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
@@ -130,35 +133,35 @@ class Principal:
                     resultsession = db.ejecutar_consulta(sql)
                 #guardar session
                 driver.close()
-                window.close()
+                window.Finalize()
                 # si es correcto iniciamos
                 interfaz = Interfaz()
                 interfaz.principal()
             elif event == "Iniciar":
-               user = values['-usrnm-']
-               pasw = values['-pwd-']
-               paswmd5 = hashlib.md5(pasw.encode())
-               pswd = paswmd5.hexdigest()
-               sql = 'SELECT * FROM usuario WHERE usuario = "'+user+'" and clave = "'+pswd+'"'
-               result = db.ejecutar_consulta(sql).fetchone()
-               if not result:
-                  sg.popup("Usuario no encontrado!")
-                  break
-               else:
-                  userini=result[1]
-                  sg.popup("Bienvenido "+userini)
-                  sql = 'SELECT * FROM session WHERE iduser = ' + str(result[0])
-                  resultsession = db.ejecutar_consulta(sql).fetchone()
-                  if not  resultsession:
+                user = values['-usrnm-']
+                pasw = values['-pwd-']
+                paswmd5 = hashlib.md5(pasw.encode())
+                pswd = paswmd5.hexdigest()
+                sql = 'SELECT * FROM usuario WHERE usuario = "'+user+'" and clave = "'+pswd+'"'
+                result = db.ejecutar_consulta(sql).fetchone()
+                if not result:
+                    sg.popup("Usuario no encontrado!")
+                  #break
+                else:
+                    userini=result[1]
+                    sg.popup("Bienvenido "+userini)
+                    sql = 'SELECT * FROM session WHERE valido = 1 and iduser = ' + str(result[0])
+                    resultsession = db.ejecutar_consulta(sql).fetchone()
+                    if not  resultsession:
                      current_time = datetime.datetime.now()
                      day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
                      moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
                      fechahoy = day + '/' + moth + '/' + str(current_time.year)
                      sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES ('+str(result[0])+',1,"'+fechahoy+'")'
                      resultsession = db.ejecutar_consulta(sql)
-                     window.close()
-                  interfaz = Interfaz()
-                  interfaz.principal()
+                window.close()
+                interfaz = Interfaz()
+                interfaz.principal()
             elif event == "Registrarse":
                 global username, password
                 sg.theme('DarkAmber')
@@ -169,11 +172,12 @@ class Principal:
                            sg.InputText(key='-password-', font=16, password_char='*')],
                           [sg.Button("Completar"), sg.Button("Cancel")]]
 
-                window = sg.Window("Sign Up", layout)
+                windowreg = sg.Window("Sign Up", layout)
 
                 while True:
-                    event, values = window.read()
+                    event, values = windowreg.read()
                     if event == 'Cancel' or event == sg.WIN_CLOSED:
+                        windowreg.finalize()
                         break
                     else:
                         if event == "Completar":
@@ -188,12 +192,12 @@ class Principal:
                                 sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("' + nombre + '","' + username + '","'+pswr+'","") '
                                 resultsession = db.ejecutar_consulta(sql)
                                 sg.popup("Usuario registrado correctamente!")
-                                window.close()
+                                windowreg.finalize()
+                                break
                             else:
                                 sg.popup_error("Usuario existe", font=16)
                                 continue
-                window.close()
+                windowreg.close()
 
-        window.close()
+       # window.close()
 
-    login()
