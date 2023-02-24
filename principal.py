@@ -83,7 +83,7 @@ class Principal:
                   [sg.Text("Usuario", size=(15, 1), font=16), sg.InputText(key='-usrnm-', font=16)],
                   [sg.Text("Contraseña", size=(15, 1), font=16), sg.InputText(key='-pwd-', password_char='*', font=16)],
                   [sg.Button('Iniciar',size=(10, 2)), sg.Button('Cancelar',size=(10, 2)), sg.Button('Registrarse',size=(10, 2))],
-                  [sg.Text("Iniciar con:", size=(30, 1), font=55)],
+                  [sg.Text("Iniciar con tu cuenta de Microsoft:", size=(30, 1), font=55)],
                   [sg.Button('.', image_data=msc_base64)]]
 
         window = sg.Window("Reconocedor de gestos", layout)
@@ -148,7 +148,7 @@ class Principal:
                   #break
                 else:
                     userini=result[1]
-                    sg.popup("Bienvenido "+userini)
+                    sg.PopupTimed("Bienvenido "+userini, auto_close_duration=5000)
                     sql = 'SELECT * FROM session WHERE valido = 1 and iduser = ' + str(result[0])
                     resultsession = db.ejecutar_consulta(sql).fetchone()
                     if not  resultsession:

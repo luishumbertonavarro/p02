@@ -34,7 +34,7 @@ class Interfaz:
                 [sg.Text('Agregar nuevo gesto', key="txtAdd"),
                  sg.Button(image_source='recursos/plus.png', image_size=(50, 50), button_color=("white", "#E7C829"),
                            key="btnAddWindow")],
-                [sg.Button('Cerrar',size=(10, 2))],
+                [sg.Button('Cerrar Sesion',size=(10, 2))],
             ]
 
         current_time = datetime.datetime.now()
