@@ -1,5 +1,4 @@
 from interfaz import Interfaz
-import datetime
 from principal import Principal
 from datosDB import DATADB
 import msal

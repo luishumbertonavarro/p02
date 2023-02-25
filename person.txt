@@ -1,3 +1,0 @@
-{"Gesto": "PALMA_ABIERTA", "Pinky": "DEDOSENUM.PINKY.value", "Index": "DEDOSENUM.INDEX.value", "Thumb": "DEDOSENUM.THUMB.value", "Ring": "DEDOSENUM.RING.value", "Middle": "DEDOSENUM.MIDDLE.value", "Image": "./recursos/PALMA_ABIERTA.png"}
-{"Gesto": "PAZ", "Thumb": null, "Index": "DEDOSENUM.INDEX.value", "Middle": "DEDOSENUM.MIDDLE.value", "Ring": null, "Pinky": null, "Image": "./recursos/PAZ.png"}
-{"Gesto": "SPIDERMAN", "Thumb": "DEDOSENUM.THUMB.value", "Index": "DEDOSENUM.INDEX.value", "Middle": null, "Ring": null, "Pinky": "DEDOSENUM.PINKY.value", "Image": "./recursos/SPIDERMAN.png"}

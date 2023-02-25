@@ -3,7 +3,7 @@ import cv2
 from reconocimiento import ReconocimientoVideo
 from strategy import CapturarPantallaStrategyAccion
 from PIL import Image
-from principal import Principal
+#from principal import Principal
 import datetime
 from datosDB import DATADB
 
@@ -36,8 +36,9 @@ class Interfaz:
                 [sg.Text('Agregar nuevo gesto', key="txtAdd"),
                  sg.Button(image_source='recursos/plus.png', image_size=(50, 50), button_color=("white", "#E7C829"),
                            key="btnAddWindow")],
-                [sg.Button('Cerrar',size=(10, 2))],
+                [sg.Button('Cerrar Sesion',size=(10, 2))],
             ]
+
         result = self.file.obtener_session_activa()
         if not result:
             exit()

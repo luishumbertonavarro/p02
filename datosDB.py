@@ -8,6 +8,7 @@ database = "recursos/bd_proyecto.db"
 
 class DATADB:
     def __init__(self):
+        print("inicio")
     def create_connection(self):
         conn = None
         try:
@@ -30,7 +31,7 @@ class DATADB:
          sql = "SELECT u.* FROM session s INNER JOIN usuario u on u.id = s.iduser WHERE s.valido = 1 AND s.fecha_session = '" + fechahoy + "' ORDER BY s.id DESC "
          conn = self.create_connection()
          c = conn.cursor()
-         result = c.execute(sql,())
+         result = c.execute(sql,()).fetchone()
          conn.commit()
          return result
     def run_query(self, query, parameters = ()):
@@ -48,6 +49,13 @@ class DATADB:
         return result
     def insert_user(self, nombre, username, passw):
         sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("' + nombre + '","' + username + '","' + passw + '","") '
+        conn = self.create_connection()
+        c = conn.cursor()
+        result = c.execute(sql, ())
+        conn.commit()
+        return result
+    def insert_user_token(self,name,username,token):
+        sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("' + name + '","' + username + '","","' + token + '") '
         conn = self.create_connection()
         c = conn.cursor()
         result = c.execute(sql, ())

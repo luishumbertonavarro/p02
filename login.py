@@ -3,7 +3,7 @@ import msal
 import app_config
 import webbrowser
 import requests
-from flask import Flask, render_template, session, request, redirect, url_for
+
 username = ''
 password = ''
 #PROGRESS BAR
@@ -78,7 +78,7 @@ def login():
             [sg.Text("Usuario", size =(15, 1), font=16),sg.InputText(key='-usrnm-', font=16)],
             [sg.Text("Contraseña", size =(15, 1), font=16),sg.InputText(key='-pwd-', password_char='*', font=16)],
             [sg.Button('Ok'), sg.Button('Cancel')],
-            [sg.Text("Iniciar con:", size=(30, 1), font=55)],
+            [sg.Text("Iniciar con tu cuenta de Microsoft:", size=(30, 1), font=55)],
             [sg.Button('m',image_data=msc_base64)]]
 
     window = sg.Window("Reconocedor de gestos", layout)

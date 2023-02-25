@@ -1,9 +1,7 @@
 import PySimpleGUI as sg
 import hashlib
 from selenium.webdriver.support.wait import WebDriverWait
-
 from datosDB import DATADB
-
 from msal import ConfidentialClientApplication, PublicClientApplication
 import app_config
 import webbrowser
@@ -19,7 +17,6 @@ password = ''
 #PROGRESS BAR
 msc_base64='iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAFBUExURWxIPlBbOc5OKXGdEt5PJnepCt1PJnapC9lPJ3WlDapMMWSCIsZNK26XFTBkfAuX2Aad4gib3xaHuw2U0uirCdWfEfOxBvWzBe2uCJJ1Kk1GRHFIPXtJO3pJO3dJPGBHQU1UPlRiNVRjNFVkNFJeOEhKRNZOKOVPJeVPJeBPJrJML2aIHnirCXmvB3qvB3SjDu9QI8FNLGyTF363Au5QI2yTGH23An23AupQJLxNLWqPGnyzBJBKN1txLDdbaxSLwg6Szg+RzhCPyiB6o76QGeKnDOWpC+WpC9uiD31oMStriQae5AKj7QKj7QOh6vu3Av24Av24Av64Ave0BKF/JCltjASf5/m1A6WBIqWBIwSg5/m1A6aBIi5ngQia3fGxBph5J0FMUlhRP/NQIn+7APJQIn+6AAGk7/+5AQGk8P///zvg0CgAAABjdFJOUwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg8REREHCBQUFBIDmsfFvjg9xMnLoflFS/r2Svf47UNJ8BYZBDA+PTsRDjc5OisDDLf39Onn8/L2swoMv7wKCsG+CgqQiwgBAZN5mZgAAAABYktHRGolYpUOAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH5wIOExQMZPIjngAAARhJREFUWMPtzNciggEYBuCv8TfRoKU9aKedQot20d4RZd3/DTh29Mbx91zAQ+dWmx1yOEnkcnsgr++CrJf+ABQMiSXhSBSKXfnI5t9h8YRUSKb2WMxL9sDuHUonZPJM9gPaRz0ccsghhxxyyCGHHHL4r1DI5A4LHcF4GrrOK5SFm1wWSUXc5AwlsPytSn1XyEDJsItILJVBCtXRsVopyBFBIqITjRbT6U/PDEYTZrZQsVSuQNV7veGhVocazRa1O90e9FjVGWtP/QEyHI1pMv3EehWtqd7/wmbzP4SDQ8IFhxxyyCGHHHLIIYcc/g6X3zjslrWmxvCAcLWmzfNyCnVKGnNzNINWL1t63UywdvHE0hrPF8h6+/YDzT/YmYyxV9UAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjMtMDItMTRUMTk6MTk6NTQrMDA6MDCJaX9kAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIzLTAyLTE0VDE5OjE5OjU0KzAwOjAw+DTH2AAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyMy0wMi0xNFQxOToyMDoxMiswMDowMC1MkAwAAAAASUVORK5CYII='
 
-db = conn.DB()
 
 
 class Principal:
@@ -84,7 +81,7 @@ class Principal:
                   [sg.Text("Usuario", size=(15, 1), font=16), sg.InputText(key='-usrnm-', font=16)],
                   [sg.Text("Contraseña", size=(15, 1), font=16), sg.InputText(key='-pwd-', password_char='*', font=16)],
                   [sg.Button('Iniciar',size=(10, 2)), sg.Button('Cancelar',size=(10, 2)), sg.Button('Registrarse',size=(10, 2))],
-                  [sg.Text("Iniciar con:", size=(30, 1), font=55)],
+                  [sg.Text("Iniciar con tu cuenta de Microsoft:", size=(30, 1), font=55)],
                   [sg.Button('.', image_data=msc_base64)]]
 
         window = sg.Window("Reconocedor de gestos", layout)
@@ -111,20 +108,11 @@ class Principal:
                 file = DATADB()
                 result = file.obtener_usuario_by_user(userna)
                 if not result:
-                    sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("'+data1+'","'+userna+'","","'+authcode+'") '
-                    resultsession = db.ejecutar_consulta(sql)
-                    sql = 'SELECT * FROM usuario WHERE usuario = "' + userna + '"'
-                    result = db.ejecutar_consulta(sql).fetchone()
-                    current_time = datetime.datetime.now()
-                    day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
-                    moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
-                    fechahoy = day + '/' + moth + '/' + str(current_time.year)
-                    sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES (' + str(
-                        resultsession[0]) + ',1,"' + fechahoy + '")'
-                    resultsession = db.ejecutar_consulta(sql)
+                    file.insert_user_token(data1,userna,authcode)
+                    result = file.obtener_usuario_by_user(userna)
+                    file.insert_session(result[0])
                 else:
-                    file = DATADB()
-                    result = file.insert_session(result[0])
+                    file.insert_session(result[0])
                 driver.close()
                 window.close()
                 # si es correcto iniciamos
@@ -142,7 +130,7 @@ class Principal:
                   #break
                 else:
                     userini=result[1]
-                    sg.popup("Bienvenido "+userini)
+                    sg.popup("Bienvenido "+userini,auto_close_duration=5000)
                     file = DATADB()
                     resultsession = file.obterner_session_valida(result[0])
                     if not  resultsession:
@@ -175,8 +163,8 @@ class Principal:
                             username = values['-username-']
                             passmd5 = hashlib.md5(password.encode())
                             pswr = passmd5.hexdigest()
-                            sql = 'SELECT * FROM usuario WHERE usuario = "' + username + '"'
-                            result = db.ejecutar_consulta(sql).fetchone()
+                            file = DATADB()
+                            result = file.obtener_usuario_by_user(username)
                             if not result:
                                 file = DATADB()
                                 file.insert_user(nombre,username,pswr)
