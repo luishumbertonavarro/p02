@@ -7,10 +7,11 @@ import app_config
 import webbrowser
 import datetime
 import requests
-from interfaz import Interfaz
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
+
+from interfaz import Interfaz
 
 username = ''
 password = ''
@@ -117,7 +118,7 @@ class Principal:
                 window.close()
                 # si es correcto iniciamos
                 interfaz = Interfaz()
-                interfaz.principal()
+                interfaz.interfaz_home()
             elif event == "Iniciar":
                 user = values['-usrnm-']
                 pasw = values['-pwd-']
@@ -138,7 +139,7 @@ class Principal:
                         result = file.insert_session(result[0])
                 window.close()
                 interfaz = Interfaz()
-                interfaz.principal()
+                interfaz.interfaz_home()
             elif event == "Registrarse":
                 global username, password
                 sg.theme('DarkAmber')

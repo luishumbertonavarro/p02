@@ -14,6 +14,6 @@ if __name__ == '__main__':
 
     else:
         interfaz = Interfaz()
-        interfaz.principal()
+        interfaz.interfaz_home()
 
 

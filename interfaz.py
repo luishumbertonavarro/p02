@@ -1,5 +1,7 @@
 import PySimpleGUI as sg
 import cv2
+
+#from principal import Principal
 from reconocimiento import ReconocimientoVideo
 from strategy import CapturarPantallaStrategyAccion
 from PIL import Image
@@ -16,7 +18,7 @@ class Interfaz:
     menssaje=None
     file = DATADB()
     font = ("Arial", 20)
-    def principal(self):
+    def interfaz_home(self):
         def cargar_layout():
             return [
                 [sg.Text(self.menssaje, key="txtCombo", font=self.font)],
@@ -53,12 +55,12 @@ class Interfaz:
             if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
                 window.close()
                 break
-            elif event == "Cerrar":
+            elif event == "Cerrar Sesion":
                 self.file.cerrar_session()
                 #break
                 window.close()
-                principal = Principal()
-                principal.login()
+                #principal = Principal()
+                #principal.login()
             if '-' in event:
                 gesto_seleccionado = event.split("-")
                 if gesto_seleccionado[0].startswith('btnGesto'):
