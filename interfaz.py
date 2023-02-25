@@ -3,8 +3,10 @@ import cv2
 from reconocimiento import ReconocimientoVideo
 from strategy import CapturarPantallaStrategyAccion
 from PIL import Image
+from principal import Principal
 import datetime
-import conexion as conn
+from datosDB import DATADB
+
 class Interfaz:
 
     sg.theme('DarkAmber')
@@ -12,7 +14,7 @@ class Interfaz:
     __reconocimiento = ReconocimientoVideo(__accion)
     llave_gesto = None
     menssaje=None
-    db = conn.DB()
+    file = DATADB()
     font = ("Arial", 20)
     def principal(self):
         def cargar_layout():
@@ -36,13 +38,7 @@ class Interfaz:
                            key="btnAddWindow")],
                 [sg.Button('Cerrar',size=(10, 2))],
             ]
-
-        current_time = datetime.datetime.now()
-        day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
-        moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
-        fechahoy = day + '/' + moth + '/' + str(current_time.year)
-        sql = "SELECT u.* FROM session s INNER JOIN usuario u on u.id = s.iduser WHERE s.valido = 1 AND s.fecha_session = '" + fechahoy + "' ORDER BY s.id DESC"
-        result = self.db.ejecutar_consulta(sql).fetchone()
+        result = self.file.obtener_session_activa()
         if not result:
             exit()
         self.menssaje = 'Hola '+str(result[1])
@@ -57,9 +53,11 @@ class Interfaz:
                 window.close()
                 break
             elif event == "Cerrar":
-                sql = 'UPDATE session SET valido = 0'
-                resultsession = self.db.ejecutar_consulta(sql)
-                break
+                self.file.cerrar_session()
+                #break
+                window.close()
+                principal = Principal()
+                principal.login()
             if '-' in event:
                 gesto_seleccionado = event.split("-")
                 if gesto_seleccionado[0].startswith('btnGesto'):

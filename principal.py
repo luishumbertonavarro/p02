@@ -2,7 +2,8 @@ import PySimpleGUI as sg
 import hashlib
 from selenium.webdriver.support.wait import WebDriverWait
 
-import conexion as conn
+from datosDB import DATADB
+
 from msal import ConfidentialClientApplication, PublicClientApplication
 import app_config
 import webbrowser
@@ -104,13 +105,11 @@ class Principal:
                 strUrl = driver.current_url
                 ide = strUrl.index('code=')+5
                 authcode = strUrl[ide:]
-                print(authcode)
                 accestoekn = client.acquire_token_by_authorization_code(code=authcode, scopes=SCOPES)
                 data1 = accestoekn['id_token_claims']['name']
                 userna = accestoekn['id_token_claims']['preferred_username']
-                print(accestoekn)
-                sql = 'SELECT * FROM usuario WHERE usuario = "' + userna + '"'
-                result = db.ejecutar_consulta(sql).fetchone()
+                file = DATADB()
+                result = file.obtener_usuario_by_user(userna)
                 if not result:
                     sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("'+data1+'","'+userna+'","","'+authcode+'") '
                     resultsession = db.ejecutar_consulta(sql)
@@ -124,13 +123,8 @@ class Principal:
                         resultsession[0]) + ',1,"' + fechahoy + '")'
                     resultsession = db.ejecutar_consulta(sql)
                 else:
-                    current_time = datetime.datetime.now()
-                    day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
-                    moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
-                    fechahoy = day + '/' + moth + '/' + str(current_time.year)
-                    sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES (' + str(result[0]) + ',1,"' + fechahoy + '")'
-                    resultsession = db.ejecutar_consulta(sql)
-                #guardar session
+                    file = DATADB()
+                    result = file.insert_session(result[0])
                 driver.close()
                 window.close()
                 # si es correcto iniciamos
@@ -141,23 +135,19 @@ class Principal:
                 pasw = values['-pwd-']
                 paswmd5 = hashlib.md5(pasw.encode())
                 pswd = paswmd5.hexdigest()
-                sql = 'SELECT * FROM usuario WHERE usuario = "'+user+'" and clave = "'+pswd+'"'
-                result = db.ejecutar_consulta(sql).fetchone()
+                file = DATADB()
+                result = file.login(user, pswd)
                 if not result:
                     sg.popup("Usuario no encontrado!")
                   #break
                 else:
                     userini=result[1]
                     sg.popup("Bienvenido "+userini)
-                    sql = 'SELECT * FROM session WHERE valido = 1 and iduser = ' + str(result[0])
-                    resultsession = db.ejecutar_consulta(sql).fetchone()
+                    file = DATADB()
+                    resultsession = file.obterner_session_valida(result[0])
                     if not  resultsession:
-                     current_time = datetime.datetime.now()
-                     day = '0' + str(current_time.day) if (current_time.day < 10) else str(current_time.day)
-                     moth = '0' + str(current_time.month) if (current_time.month < 10) else str(current_time.month)
-                     fechahoy = day + '/' + moth + '/' + str(current_time.year)
-                     sql = 'INSERT INTO session("iduser","valido","fecha_session") VALUES ('+str(result[0])+',1,"'+fechahoy+'")'
-                     resultsession = db.ejecutar_consulta(sql)
+                        file = DATADB()
+                        result = file.insert_session(result[0])
                 window.close()
                 interfaz = Interfaz()
                 interfaz.principal()
@@ -188,8 +178,8 @@ class Principal:
                             sql = 'SELECT * FROM usuario WHERE usuario = "' + username + '"'
                             result = db.ejecutar_consulta(sql).fetchone()
                             if not result:
-                                sql = 'INSERT INTO usuario ("nombre","usuario","clave","token") VALUES ("' + nombre + '","' + username + '","'+pswr+'","") '
-                                resultsession = db.ejecutar_consulta(sql)
+                                file = DATADB()
+                                file.insert_user(nombre,username,pswr)
                                 sg.popup("Usuario registrado correctamente!")
                                 windowreg.finalize()
                                 break
