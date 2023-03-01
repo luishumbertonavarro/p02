@@ -97,10 +97,12 @@ class Interfaz:
         def cargar_layout():
             return [
                 [sg.Text('Seleccione los dedos para el nuevo gesto:', key="txtCombo")],
-                [sg.Checkbox(dedoscheckbox, default=True, key=dedoscheckbox) for dedoscheckbox in dedos_seleccionar],
+                [sg.Checkbox(dedoscheckbox, default=True, key=dedoscheckbox, font='bold') for dedoscheckbox in dedos_seleccionar],
                 [sg.Button('Seleccionar todos'), sg.Button('Desmarcar todos')],
+                [sg.Text('Seleccione un nombre para el gesto:', font='bold'), sg.InputText(key='txtNombreGestoNuevo', font='bold')],
 
-                [sg.Button('Guardar')]
+
+                [sg.Button('Guardar', font='bold')]
             ]
         if parent_window:
             parent_window.close()

@@ -123,6 +123,3 @@ class Principal:
                                 sg.popup_error("Usuario existe", font=16)
                                 continue
                 windowreg.close()
-
-       # window.close()
-
