@@ -117,7 +117,7 @@ class Principal:
                 window.close()
                 # si es correcto iniciamos
                 interfaz = Interfaz()
-                interfaz.principal()
+                interfaz.Home()
             elif event == "Iniciar":
                 user = values['-usrnm-']
                 pasw = values['-pwd-']
@@ -138,7 +138,7 @@ class Principal:
                         result = file.insert_session(result[0])
                 window.close()
                 interfaz = Interfaz()
-                interfaz.principal()
+                interfaz.Home()
             elif event == "Registrarse":
                 global username, password
                 sg.theme('DarkAmber')

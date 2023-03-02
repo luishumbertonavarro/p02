@@ -16,7 +16,7 @@ class Interfaz:
     menssaje=None
     file = DATADB()
     font = ("Arial", 20)
-    def principal(self):
+    def Home(self):
         def cargar_layout():
             return [
                 [sg.Text(self.menssaje, key="txtCombo", font=self.font)],
@@ -57,8 +57,8 @@ class Interfaz:
                 self.file.cerrar_session()
                 #break
                 window.close()
-                principal = Principal()
-                principal.login()
+                """principal = Principal()
+                principal.login()"""
             if '-' in event:
                 gesto_seleccionado = event.split("-")
                 if gesto_seleccionado[0].startswith('btnGesto'):
@@ -87,7 +87,7 @@ class Interfaz:
 
         window.close()
 
-    def nuevo_gesto(self, parent_window=None):
+    def nuevo_gesto(self, parent_windoxw=None):
         dedos_seleccionar = ['Pulgar', 'Indice', 'Medio', 'Anular', 'Meñique']
 
         def cargar_layout():
