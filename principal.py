@@ -7,10 +7,11 @@ import app_config
 import webbrowser
 import datetime
 import requests
-from interfaz import Interfaz
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
+
+from interfaz import Interfaz
 
 username = ''
 password = ''
@@ -20,59 +21,6 @@ msc_base64='iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAAIGNIUk0AAHolAACAgwAA
 
 
 class Principal:
-
-    def create_account():
-        global username, password
-        sg.theme('DarkAmber')
-        layout = [[sg.Text("Sign Up", size=(15, 1), font=40, justification='c')],
-                  [sg.Text("E-mail", size=(15, 1), font=16), sg.InputText(key='-email-', font=16)],
-                  [sg.Text("Re-enter E-mail", size=(15, 1), font=16), sg.InputText(key='-remail-', font=16)],
-                  [sg.Text("Create Username", size=(15, 1), font=16), sg.InputText(key='-username-', font=16)],
-                  [sg.Text("Create Password", size=(15, 1), font=16),
-                   sg.InputText(key='-password-', font=16, password_char='*')],
-                  [sg.Button("Submit"), sg.Button("Cancel")]]
-
-        window = sg.Window("Sign Up", layout)
-
-        while True:
-            event, values = window.read()
-            if event == 'Cancel' or event == sg.WIN_CLOSED:
-                break
-            else:
-                if event == "Submit":
-                    password = values['-password-']
-                    username = values['-username-']
-                    if values['-email-'] != values['-remail-']:
-                        sg.popup_error("Error", font=16)
-                        continue
-                    elif values['-email-'] == values['-remail-']:
-                        progress_bar()
-                        break
-        window.close()
-
-    #create_account()
-
-    def _retrieve_data_from_function(token, table):
-        raph_data = requests.get(  # Use token to call downstream service
-            app_config.GRAPH_ENDPOINT,
-            headers={'Authorization': 'Bearer ' + token},
-        ).json()
-        print(raph_data)
-
-    def _get_token_from_cache(scope):
-        cache = _load_cache()  # This web app maintains one cache per session
-        cca = _build_msal_app(cache=cache)
-        accounts = cca.get_accounts()
-        if accounts:  # So all account(s) belong to the current signed-in user
-            result = cca.acquire_token_silent(scope, account=accounts[0])
-            _save_cache(cache)
-            return result
-
-    def _load_cache():
-        cache = msal.SerializableTokenCache()
-        if session.get("token_cache"):
-            cache.deserialize(session["token_cache"])
-        return cache
 
     def login(self):
         global username, password
@@ -102,9 +50,9 @@ class Principal:
                 strUrl = driver.current_url
                 ide = strUrl.index('code=')+5
                 authcode = strUrl[ide:]
-                accestoekn = client.acquire_token_by_authorization_code(code=authcode, scopes=SCOPES)
-                data1 = accestoekn['id_token_claims']['name']
-                userna = accestoekn['id_token_claims']['preferred_username']
+                accestoken = client.acquire_token_by_authorization_code(code=authcode, scopes=SCOPES)
+                data1 = accestoken['id_token_claims']['name']
+                userna = accestoken['id_token_claims']['preferred_username']
                 file = DATADB()
                 result = file.obtener_usuario_by_user(userna)
                 if not result:
@@ -117,7 +65,7 @@ class Principal:
                 window.close()
                 # si es correcto iniciamos
                 interfaz = Interfaz()
-                interfaz.Home()
+                interfaz.interfaz_home()
             elif event == "Iniciar":
                 user = values['-usrnm-']
                 pasw = values['-pwd-']
@@ -138,7 +86,7 @@ class Principal:
                         result = file.insert_session(result[0])
                 window.close()
                 interfaz = Interfaz()
-                interfaz.Home()
+                interfaz.interfaz_home()
             elif event == "Registrarse":
                 global username, password
                 sg.theme('DarkAmber')
@@ -175,6 +123,3 @@ class Principal:
                                 sg.popup_error("Usuario existe", font=16)
                                 continue
                 windowreg.close()
-
-       # window.close()
-

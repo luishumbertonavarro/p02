@@ -8,9 +8,11 @@ from matplotlib import pyplot as plt
 from gestos import GestoClass
 from enums import GestosEnum, DEDOSENUM
 from strategy import AccionEstrategia
+from datosDB import DATADB
 
 
 class ReconocimientoI(ABC):
+    file = DATADB()
 
     def __init__(self):
         self.mp_manos = mp.solutions.hands
@@ -51,6 +53,7 @@ class ReconocimientoVideo(ReconocimientoI):
     gestos_ = []
 
     def __init__(self, accion_estrategia: AccionEstrategia):
+        self.gestos_ = []
         super().__init__()
         self.accion_estrategia = accion_estrategia
         self.filter_on = None
@@ -90,9 +93,35 @@ class ReconocimientoVideo(ReconocimientoI):
              DEDOSENUM.MIDDLE.value],
             r"./recursos/PALMA_ABIERTA.png"
         )
+
         self.gestos_.append(spiderman_sign)
         self.gestos_.append(peace_sign)
         self.gestos_.append(palma_abierta)
+        user = self.file.obtener_session_activa()
+        result = self.file.obtener_gestos(user[0])
+        migesto = None
+        for gesto in result:
+            migesto = GestoClass(
+                gesto[1],
+                self.obtener_dedos_data(gesto[4],gesto[5],gesto[6],gesto[7],gesto[8]),
+                gesto[2]
+            )
+            self.gestos_.append(migesto)
+        print("")
+
+    def obtener_dedos_data(self,t,i,m,r,p):
+        dedos = []
+        if t:
+            dedos.append('THUMB')
+        if i:
+            dedos.append('INDEX')
+        if m:
+            dedos.append('MIDDLE')
+        if r:
+            dedos.append('RING')
+        if p:
+            dedos.append('PINKY')
+        return dedos
 
     def crear_carpeta_por_hora(self):
         tiempo_actual = datetime.datetime.now()

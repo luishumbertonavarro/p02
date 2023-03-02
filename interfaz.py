@@ -1,5 +1,10 @@
+import json
+
 import PySimpleGUI as sg
 import cv2
+
+from gestos import GestoClass
+#from principal import Principal
 from reconocimiento import ReconocimientoVideo
 from strategy import CapturarPantallaStrategyAccion
 from PIL import Image
@@ -16,7 +21,7 @@ class Interfaz:
     menssaje=None
     file = DATADB()
     font = ("Arial", 20)
-    def Home(self):
+    def interfaz_home(self, parent_window=None):
         def cargar_layout():
             return [
                 [sg.Text(self.menssaje, key="txtCombo", font=self.font)],
@@ -26,25 +31,27 @@ class Interfaz:
                               key='btnGesto-' + gesto.nombre_gesto)
                     for gesto in self.__reconocimiento.gestos_
                 ],
-
+                [sg.Text('Agregar nuevo gesto', key="txtAdd"),
+                 sg.Button(image_source='recursos/interrogacion.png', image_size=(60, 60),
+                           button_color=("white", "#E7C829"),
+                           key="btnAddWindow")],
                 [sg.Text(key='gestoSeleccionado', text_color='white')],
                 [sg.Text(key='errorGesto', text_color='red')],
                 [sg.Text("Seleccione una carpeta para guardar: ")],
                 [sg.In(enable_events=True, key='File_Path'), sg.FolderBrowse('Buscar')],
                 [sg.Text(key='errorFolder', text_color='red')],
                 [sg.Button('Ok',size=(10, 2)), sg.Button('Cancel',size=(10, 2))],
-                [sg.Text('Agregar nuevo gesto', key="txtAdd"),
-                 sg.Button(image_source='recursos/plus.png', image_size=(50, 50), button_color=("white", "#E7C829"),
-                           key="btnAddWindow")],
-                [sg.Button('Cerrar Sesion',size=(10, 2))],
-            ]
 
+                [sg.Button('Cerrar Sesion')],
+            ]
+        if parent_window:
+            parent_window.close()
         result = self.file.obtener_session_activa()
         if not result:
             exit()
         self.menssaje = 'Hola '+str(result[1])
         # Create the Window
-        window = sg.Window('Reconocimiento de gestos', cargar_layout(), resizable=True, size=(900, 600))
+        window = sg.Window('Reconocimiento de gestos', cargar_layout(), resizable=True)
         # Event Loop to process "events" and get the "values" of the inputs
         self.llave_gesto = None
         while True:
@@ -53,12 +60,12 @@ class Interfaz:
             if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
                 window.close()
                 break
-            elif event == "Cerrar":
+            elif event == "Cerrar Sesion":
                 self.file.cerrar_session()
                 #break
                 window.close()
-                """principal = Principal()
-                principal.login()"""
+                #principal = Principal()
+                #principal.login()
             if '-' in event:
                 gesto_seleccionado = event.split("-")
                 if gesto_seleccionado[0].startswith('btnGesto'):
@@ -87,44 +94,43 @@ class Interfaz:
 
         window.close()
 
-    def nuevo_gesto(self, parent_windoxw=None):
+    def nuevo_gesto(self, parent_window = None):
         dedos_seleccionar = ['Pulgar', 'Indice', 'Medio', 'Anular', 'Meñique']
-
+        dedos_seleccionar_data = ['THUMB', 'INDEX', 'MIDDLE', 'RING', 'PINKY']
         def cargar_layout():
             return [
                 [sg.Text('Seleccione los dedos para el nuevo gesto:', key="txtCombo")],
-                [sg.Checkbox(dedoscheckbox, default=True, key=dedoscheckbox) for dedoscheckbox in dedos_seleccionar],
+                [sg.Checkbox(dedoscheckbox, default=True, key=dedoscheckbox, font='bold') for dedoscheckbox in dedos_seleccionar],
                 [sg.Button('Seleccionar todos'), sg.Button('Desmarcar todos')],
-                [sg.Text('Sube una imagen de guia para el gesto'), sg.Input(),
-                 sg.FileBrowse(file_types=(("png files", "*.png"),))],
-                [sg.Image(size=(50, 50), key='image')],
-                [sg.Button('Ok'), sg.Button('Cancel')]
-            ]
+                [sg.Text('Seleccione un nombre para el gesto:', font='bold'), sg.InputText(key='txtNombreGestoNuevo', font='bold')],
 
+
+                [sg.Button('Guardar', font='bold')]
+            ]
+        if parent_window:
+            parent_window.close()
+
+        result = self.file.obtener_session_activa()
         # Create the Window
         window = sg.Window('Reconocimiento de gestos', cargar_layout(), resizable=True)
         # Event Loop to process "events" and get the "values" of the inputs
         self.llave_gesto = None
         while True:
             event, values = window.read()
-            if event == 'Ok':
-                if values[0] and values[0].endswith('.png'):
-                    try:
-                        # Open the image and convert it to 50x50 pixels
-                        image = Image.open(values[0])
-                        image = image.resize((50, 50))
-                        # Save the image to a temporary file
-                        temp_file = 'temp.png'
-                        image.save(temp_file)
-                        # Update the image element with the resized image
-                        sg_image = sg.Image(temp_file, size=(50, 50))
-                        window['image'].update(temp_file)
-                    except Exception as e:
-                        sg.popup_error(str(e))
-                else:
-                    sg.popup_error('Please select a PNG image')
+            if event == 'Guardar':
+                nombre = values['txtNombreGestoNuevo']
+                image= r"./recursos/PALMA_ABIERTA.png"
+                Pulgar =int(values['Pulgar'])
+                Indice =int(values['Indice'])
+                Medio =int(values['Medio'])
+                Anular =int(values['Anular'])
+                Meñique =int(values['Meñique'])
+                reg = self.file.guardar_gesto(nombre, image, result[0], Pulgar, Indice, Medio, Anular, Meñique)
+                __accion = CapturarPantallaStrategyAccion()
+                self.__reconocimiento = ReconocimientoVideo(__accion)
+                self.interfaz_home(window)
 
-            if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
+            if event == sg.WIN_CLOSED:  # if user closes window or clicks cancel
                 break
 
             if event == self.llave_gesto:
