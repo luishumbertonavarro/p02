@@ -3,36 +3,51 @@ import json
 import PySimpleGUI as sg
 import cv2
 
+import principal
 from gestos import GestoClass
-#from principal import Principal
 from reconocimiento import ReconocimientoVideo
 from strategy import CapturarPantallaStrategyAccion
 from PIL import Image
-#from principal import Principal
 import datetime
 from datosDB import DATADB
 
-class Interfaz:
+import hashlib
+from selenium.webdriver.support.wait import WebDriverWait
+from msal import ConfidentialClientApplication, PublicClientApplication
+import app_config
+import webbrowser
+import datetime
+import requests
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
 
+class Interfaz:
     sg.theme('DarkAmber')
+    sg.set_options(font='bold')
     __accion = CapturarPantallaStrategyAccion()
     __reconocimiento = ReconocimientoVideo(__accion)
     llave_gesto = None
     menssaje=None
     file = DATADB()
     font = ("Arial", 20)
+    username = ''
+    password = ''
+    # PROGRESS BAR
+
+    sg.set_options(font='bold')
+
     def interfaz_home(self, parent_window=None):
         def cargar_layout():
             return [
+
                 [sg.Text(self.menssaje, key="txtCombo", font=self.font)],
                 [sg.Text('Seleccione el gesto para la captura:', key="txtCombo")],
-                [
-                    sg.Button(image_source=gesto.img_referencia, button_color='white',
-                              key='btnGesto-' + gesto.nombre_gesto)
-                    for gesto in self.__reconocimiento.gestos_
-                ],
+                [(sg.Button(image_source=gesto.img_referencia, button_color='white', key='btnGesto-' + gesto.nombre_gesto) ,sg.Text(gesto.nombre_gesto))
+                  for gesto in self.__reconocimiento.gestos_ ],
+
                 [sg.Text('Agregar nuevo gesto', key="txtAdd"),
-                 sg.Button(image_source='recursos/interrogacion.png', image_size=(60, 60),
+                 sg.Button(image_source='recursos/manoAdd.png', image_size=(50, 50),
                            button_color=("white", "#E7C829"),
                            key="btnAddWindow")],
                 [sg.Text(key='gestoSeleccionado', text_color='white')],
@@ -40,9 +55,9 @@ class Interfaz:
                 [sg.Text("Seleccione una carpeta para guardar: ")],
                 [sg.In(enable_events=True, key='File_Path'), sg.FolderBrowse('Buscar')],
                 [sg.Text(key='errorFolder', text_color='red')],
-                [sg.Button('Ok',size=(10, 2)), sg.Button('Cancel',size=(10, 2))],
+                [sg.Button('Ok', size=(7,1)), sg.Button('Cancel', size=(7,1))],
 
-                [sg.Button('Cerrar Sesion')],
+                [sg.Button('Cerrar Sesion', size=(11,1))],
             ]
         if parent_window:
             parent_window.close()
@@ -50,6 +65,8 @@ class Interfaz:
         if not result:
             exit()
         self.menssaje = 'Hola '+str(result[1])
+        self.__reconocimiento.gestos_=[]
+        self.__reconocimiento.cargar_gestos_predeterminados()
         # Create the Window
         window = sg.Window('Reconocimiento de gestos', cargar_layout(), resizable=True)
         # Event Loop to process "events" and get the "values" of the inputs
@@ -64,8 +81,7 @@ class Interfaz:
                 self.file.cerrar_session()
                 #break
                 window.close()
-                #principal = Principal()
-                #principal.login()
+                self.login()
             if '-' in event:
                 gesto_seleccionado = event.split("-")
                 if gesto_seleccionado[0].startswith('btnGesto'):
@@ -100,12 +116,12 @@ class Interfaz:
         def cargar_layout():
             return [
                 [sg.Text('Seleccione los dedos para el nuevo gesto:', key="txtCombo")],
-                [sg.Checkbox(dedoscheckbox, default=True, key=dedoscheckbox, font='bold') for dedoscheckbox in dedos_seleccionar],
+                [sg.Checkbox(dedoscheckbox, default=True, key=dedoscheckbox) for dedoscheckbox in dedos_seleccionar],
                 [sg.Button('Seleccionar todos'), sg.Button('Desmarcar todos')],
-                [sg.Text('Seleccione un nombre para el gesto:', font='bold'), sg.InputText(key='txtNombreGestoNuevo', font='bold')],
+                [sg.Text('Seleccione un nombre para el gesto:', font='bold'), sg.InputText(key='txtNombreGestoNuevo')],
 
 
-                [sg.Button('Guardar', font='bold')]
+                [sg.Button('Ok', size=(7,1)), sg.Button('Cancelar', size=(7,1))],
             ]
         if parent_window:
             parent_window.close()
@@ -119,7 +135,7 @@ class Interfaz:
             event, values = window.read()
             if event == 'Guardar':
                 nombre = values['txtNombreGestoNuevo']
-                image= r"./recursos/PALMA_ABIERTA.png"
+                image= r"./recursos/gestoPersonalizado.png"
                 Pulgar =int(values['Pulgar'])
                 Indice =int(values['Indice'])
                 Medio =int(values['Medio'])
@@ -131,8 +147,10 @@ class Interfaz:
                 self.interfaz_home(window)
 
             if event == sg.WIN_CLOSED:  # if user closes window or clicks cancel
+                window.close()
                 break
-
+            if event== 'Cancelar':
+                self.interfaz_home(window)
             if event == self.llave_gesto:
                 [
                     window[f'btnGesto-{gesto.nombre_gesto}'].update(button_color='white')
@@ -147,9 +165,6 @@ class Interfaz:
             elif event == 'Desmarcar todos':
                 for dedoscheckbox in dedos_seleccionar:
                     window[dedoscheckbox].update(False)
-
-
-
         window.close()
 
     def abrir_recon(self, parent_window=None):
@@ -182,4 +197,101 @@ class Interfaz:
             timer += 1
         self.__reconocimiento.cerrar_ventanas()
         window.close()
-        self.principal()
+        self.interfaz_home()
+
+    def login(self):
+        global username, password
+        sg.theme("DarkAmber")
+        layout = [[sg.Text("Inicie sesion para Comenzar", size=(30, 1), font=55)],
+                  [sg.Text("Usuario", size=(15, 1), font=16), sg.InputText(key='-usrnm-', font=16)],
+                  [sg.Text("Contraseña", size=(15, 1), font=16), sg.InputText(key='-pwd-', password_char='*', font=16)],
+                  [sg.Button('Iniciar'), sg.Button('Cancelar'), sg.Button('Registrarse')],
+                  [sg.Button('Iniciar sesion con Microsoft',key='-inimicrosoft-')]]
+
+        window = sg.Window("Reconocedor de gestos", layout)
+
+        while True:
+            event, values = window.read()
+            if event == "Cancelar" or event == sg.WIN_CLOSED:
+                break
+            elif event == "-inimicrosoft-":
+                SCOPES = ['User.Read']
+                client = ConfidentialClientApplication(client_id=app_config.CLIENT_ID, client_credential=app_config.CLIENT_SECRET)
+                authori_url = client.get_authorization_request_url(SCOPES)
+                #print(authori_url)
+                driver = webdriver.Chrome()
+                driver.get(authori_url)
+                wait = WebDriverWait(driver, 60)
+                element = wait.until(EC.url_contains("?code="))
+                strUrl = driver.current_url
+                ide = strUrl.index('code=')+5
+                authcode = strUrl[ide:]
+                accestoken = client.acquire_token_by_authorization_code(code=authcode, scopes=SCOPES)
+                data1 = accestoken['id_token_claims']['name']
+                userna = accestoken['id_token_claims']['preferred_username']
+                file = DATADB()
+                result = file.obtener_usuario_by_user(userna)
+                if not result:
+                    file.insert_user_token(data1,userna,authcode)
+                    result = file.obtener_usuario_by_user(userna)
+                    file.insert_session(result[0])
+                else:
+                    file.insert_session(result[0])
+                driver.close()
+                window.close()
+                self.interfaz_home()
+            elif event == "Iniciar":
+                user = values['-usrnm-']
+                pasw = values['-pwd-']
+                paswmd5 = hashlib.md5(pasw.encode())
+                pswd = paswmd5.hexdigest()
+                file = DATADB()
+                result = file.login(user, pswd)
+                if not result:
+                    sg.popup("Usuario no encontrado!")
+                else:
+                    userini=result[1]
+                    #sg.popup("Bienvenido "+userini,auto_close_duration=5000)
+                    file = DATADB()
+                    resultsession = file.obterner_session_valida(result[0])
+                    if not  resultsession:
+                        file = DATADB()
+                        result = file.insert_session(result[0])
+                window.close()
+                self.interfaz_home()
+            elif event == "Registrarse":
+                global username, password
+                sg.theme('DarkAmber')
+                layout = [[sg.Text("Registrate", font=55, justification='c')],
+                          [sg.Text("Nombre Completo", size=(15, 1)), sg.InputText(key='-email-', font=16)],
+                          [sg.Text("Crear Usuario", size=(15, 1)), sg.InputText(key='-username-', font=16)],
+                          [sg.Text("Crear Password", size=(15, 1)), sg.InputText(key='-password-', font=16, password_char='*')],
+                          [sg.Text(key='errorCrearUser', text_color='red')],
+                          [sg.Button("Completar"), sg.Button("Cancel")]]
+
+                windowreg = sg.Window("Sign Up", layout)
+
+                while True:
+                    event, values = windowreg.read()
+                    if event == 'Cancel' or event == sg.WIN_CLOSED:
+                        windowreg.finalize()
+                        break
+                    else:
+                        if event == "Completar":
+                            nombre = values['-email-']
+                            password = values['-password-']
+                            username = values['-username-']
+                            passmd5 = hashlib.md5(password.encode())
+                            pswr = passmd5.hexdigest()
+                            file = DATADB()
+                            result = file.obtener_usuario_by_user(username)
+                            if not result:
+                                file = DATADB()
+                                file.insert_user(nombre,username,pswr)
+                                sg.popup("Usuario registrado correctamente!")
+                                windowreg.finalize()
+                                break
+                            else:
+                                sg.popup_error("Usuario existe", font=16)
+                                continue
+                windowreg.close()

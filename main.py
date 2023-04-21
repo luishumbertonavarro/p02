@@ -1,19 +1,17 @@
 from interfaz import Interfaz
-from principal import Principal
 from datosDB import DATADB
 import msal
+from principal import Principal
 #system("clear")
 if __name__ == '__main__':
 
     file = DATADB()
     result = file.obtener_session_activa()
+    interfaz = Interfaz()
 
     if result is None:
-        principal = Principal()
-        principal.login()
-
+        interfaz.login()
     else:
-        interfaz = Interfaz()
         interfaz.interfaz_home()
 
 

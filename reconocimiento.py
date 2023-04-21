@@ -97,16 +97,18 @@ class ReconocimientoVideo(ReconocimientoI):
         self.gestos_.append(spiderman_sign)
         self.gestos_.append(peace_sign)
         self.gestos_.append(palma_abierta)
+
         user = self.file.obtener_session_activa()
-        result = self.file.obtener_gestos(user[0])
-        migesto = None
-        for gesto in result:
-            migesto = GestoClass(
-                gesto[1],
-                self.obtener_dedos_data(gesto[4],gesto[5],gesto[6],gesto[7],gesto[8]),
-                gesto[2]
-            )
-            self.gestos_.append(migesto)
+        if user:
+            result = self.file.obtener_gestos(user[0])
+            migesto = None
+            for gesto in result:
+                migesto = GestoClass(
+                    gesto[1],
+                    self.obtener_dedos_data(gesto[4],gesto[5],gesto[6],gesto[7],gesto[8]),
+                    gesto[2]
+                )
+                self.gestos_.append(migesto)
         print("")
 
     def obtener_dedos_data(self,t,i,m,r,p):
@@ -264,4 +266,3 @@ class ReconocimientoVideo(ReconocimientoI):
     def cerrar_ventanas(self):
         self.camera_video.release()
         cv2.destroyAllWindows()
-
